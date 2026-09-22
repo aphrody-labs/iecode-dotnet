@@ -1,0 +1,163 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:IESEViewModel.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignWidth="800"
+    d:DesignHeight="450"
+    x:Class="IESE.Views.MainWindow"
+    x:DataType="vm:MainViewModel"
+    Title="IESE"
+    MinWidth="960"
+    MinHeight="640"
+>
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="File" IsVisible="true">
+                <NativeMenu>
+                    <NativeMenuItem Header="Open" Gesture="Meta+O" Command="{Binding OpenSaveCommand}" />
+                    <NativeMenuItem Header="Save" Gesture="Meta+S" Command="{Binding SaveCommand}" />
+                </NativeMenu>
+            </NativeMenuItem>
+            <NativeMenuItem Header="Tool" IsEnabled="true">
+                <NativeMenu>
+                    <NativeMenuItem Header="Manage Player">
+                        <NativeMenu>
+                            <NativeMenuItem Header="Recruit" Gesture="Meta+N" 
+                                            Command="{Binding OpenMessageComboBoxCommand}"
+                                            CommandParameter="Recruit"/>
+                            <NativeMenuItem Header="Dismiss" Gesture="Meta+K" 
+                                            Command="{Binding OpenMessageComboBoxCommand}"
+                                            CommandParameter="Dismiss"/>
+                            <!--TODO: Implement-->
+                            <NativeMenuItem Header="Import" Gesture="Meta+I" />
+                            <NativeMenuItem Header="Replace" Gesture="Meta+R" 
+                                            Command="{Binding OpenMessageComboBoxCommand}"
+                                            CommandParameter="Replace"/>
+                            <NativeMenuItem Header="Export" Gesture="Meta+E" 
+                                            Command="{Binding OpenMessageComboBoxCommand}"
+                                            CommandParameter="Export"/>
+                        </NativeMenu>
+                    </NativeMenuItem>
+                    <NativeMenuItem Header="Manage Player Tab">
+                        <NativeMenu>
+                            <!--TODO: Implement-->
+                            <NativeMenuItem Header="Add" Gesture="Insert" />
+                            <!--TODO: Implement-->
+                            <NativeMenuItem Header="Remove" Gesture="Ctrl+W" />
+                        </NativeMenu>
+                    </NativeMenuItem>
+                    <NativeMenuItem Header="NDS viewer"
+                                    Command="{Binding OpenNdsViewerCommand}"
+                                    Gesture="Meta+N" />
+                    <NativeMenuItem Header="Toolbox text decoder"
+                                    Command="{Binding OpenToolboxTextDecoderCommand}"
+                                    Gesture="Meta+T" />
+                    <NativeMenuItem Header="IEVR tools"
+                                    Command="{Binding OpenIevrToolsCommand}"
+                                    Gesture="Meta+I" />
+                </NativeMenu>
+            </NativeMenuItem>
+        </NativeMenu>
+    </NativeMenu.Menu>
+
+    <Grid RowDefinitions="Auto,*" Margin="16">
+        <NativeMenuBar></NativeMenuBar>
+        <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto,*" ColumnDefinitions="*,Auto" RowSpacing="12">
+            <Button Grid.Column="0"
+                    Classes="iecode-primary"
+                    HorizontalAlignment="Left"
+                    Content="Open save"
+                    Command="{Binding OpenSaveCommand}"
+                    IsVisible="{Binding !GameStartedLoading}"
+                    AutomationProperties.Name="Open save file"
+                    AutomationProperties.AutomationId="save-open" />
+            <Button Grid.Column="1"
+                    Content="NDS viewer"
+                    Command="{Binding OpenNdsViewerCommand}"
+                    ToolTip.Tip="Open the integrated NDS, 3D and audio viewer"
+                    AutomationProperties.Name="Open the integrated NDS viewer"
+                    AutomationProperties.AutomationId="viewer-nds-open" />
+            <Button Grid.Column="1"
+                    Grid.Row="1"
+                    Content="Text decoder"
+                    Command="{Binding OpenToolboxTextDecoderCommand}"
+                    ToolTip.Tip="Decode and encode Toolbox text blocks"
+                    AutomationProperties.Name="Open the Toolbox text decoder"
+                    AutomationProperties.AutomationId="toolbox-text-decoder-open" />
+            <Button Grid.Column="1"
+                    Grid.Row="2"
+                    Content="IEVR tools"
+                    Command="{Binding OpenIevrToolsCommand}"
+                    ToolTip.Tip="Manage IEVR configuration, profiles and mods"
+                    AutomationProperties.Name="Open IEVR tools"
+                    AutomationProperties.AutomationId="ievr-tools-open" />
+            <TextBlock Grid.Column="0"
+                       VerticalAlignment="Center"
+                       IsVisible="{Binding IsLoading}">Loading…</TextBlock>
+            <Grid Grid.Row="3" Grid.ColumnSpan="2" ColumnDefinitions="*,*" ColumnSpacing="16"
+                  IsVisible="{Binding GameIsAvailable}">
+            <TabControl Grid.Column="0">
+                <TabItem Header="Player">
+                    <TabControl>
+                        <!--TODO: Implement-->
+                        <TabItem Header="Informations">
+
+                        </TabItem>
+                        <!--TODO: Implement-->
+                        <TabItem Header="Special Moves">
+                        </TabItem>
+                        <!--TODO: Implement-->
+                        <TabItem Header="Equipments">
+                        </TabItem>
+                    </TabControl>
+                </TabItem>
+                <!--TODO: Implement-->
+                <TabItem Header="+"></TabItem>
+            </TabControl>
+            <StackPanel Grid.Column="1" Spacing="12">
+                <TabControl >
+                    <!--TODO: Implement-->
+                    <TabItem Header="Save Reserve">
+
+                    </TabItem>
+                </TabControl>
+                <WrapPanel Orientation="Horizontal" ItemSpacing="8" LineSpacing="8">
+                    <!--TODO: Implement-->
+                    <Button
+                        Content="Tactics"
+                        ToolTip.Tip="Open tactics"
+                        AutomationProperties.Name="Open tactics"
+                    />
+                    <Button
+                        Content="View Information"
+                        Command="{Binding OpenSaveInfoDialogCommand}"
+                        AutomationProperties.Name="View save information"
+                    />
+                    <!--TODO: Implement-->
+                    <Button
+                        Content="Play Records"
+                    />
+                    <!--TODO: Implement-->
+                    <Button
+                        Content="Inventory"
+                    />
+                    <!--TODO: Implement-->
+                    <Button
+                        Content="Streetpass"
+                    />
+                </WrapPanel>
+            </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

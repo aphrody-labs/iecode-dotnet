@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <EnableDefaultAvaloniaResourceItems>true</EnableDefaultAvaloniaResourceItems>
+    <AssemblyName>IECODE.Gui</AssemblyName>
+    <RootNamespace>IECODE.Gui</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+    <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)' == 'Debug'" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="DynamicData" />
+    <PackageReference Include="FluentAvaloniaUI" />
+    <PackageReference Include="FluentAvalonia.ProgressRing" />
+    <PackageReference Include="Material.Icons" />
+    <PackageReference Include="Material.Icons.Avalonia" />
+    <PackageReference Include="NAudio" />
+    <PackageReference Include="OpenTK" />
+    <PackageReference Include="ReactiveUI" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Core/IECODE.Core.csproj" />
+  </ItemGroup>
+
+  <!-- One GUI host owns the integrated IESE desktop surface. -->
+  <ItemGroup>
+    <Compile Include="*.cs" />
+    <Compile Include="Views/**/*.cs" />
+    <Compile Include="Converter/**/*.cs" />
+    <Compile Include="Shell/**/*.cs" />
+    <Compile Include="Tools/**/*.cs" />
+    <Compile Include="IESEViewModel/**/*.cs" />
+    <Compile Include="NdsViewer/**/*.cs" />
+    <Compile Include="NdsViewerShared/**/*.cs" />
+    <Compile Include="NdsViewerPlugins/**/*.cs" />
+    <!-- Pure feature logic from the absorbed tools. UI designer/forms remain
+         excluded until their surface is represented by the unified shell. -->
+    <Compile Include="Toolbox/Logic/**/*.cs" />
+    <Compile Include="Toolbox/Formats/**/*.cs" />
+    <Compile Include="Toolbox/Dictionaries/**/*.cs" />
+    <Compile Include="Toolbox/DamienG/**/*.cs" />
+    <Compile Include="MapEditor/Tools/**/*.cs" Exclude="MapEditor/Tools/Draw.cs;MapEditor/Tools/BinaryDataReader.cs;MapEditor/Tools/BinaryDataWriter.cs" />
+    <Compile Include="MapEditor/InazumaElevenGo/Logic/**/*.cs" />
+    <Compile Include="SaveEditor/InazumaEleven/Logic/**/*.cs" />
+    <Compile Include="SaveEditor/INZ/**/*.cs" />
+    <Compile Include="SaveEditor/Level 5/Compression/**/*.cs" />
+    <Compile Include="SaveEditor/Tools/**/*.cs" Exclude="SaveEditor/Tools/Draw.cs;SaveEditor/Tools/Collections.cs" />
+    <Compile Include="StrikersTools/Utils/**/*.cs" />
+    <Compile Include="StrikersTools/FileFormats/**/*.cs" Exclude="StrikersTools/FileFormats/SHTX.cs;StrikersTools/FileFormats/Font.cs;StrikersTools/FileFormats/ArchiveFile.cs;StrikersTools/FileFormats/BLN.cs;StrikersTools/FileFormats/Patcher.cs" />
+    <Compile Include="IevrManager/Config.cs" />
+    <Compile Include="IevrManager/Exceptions/**/*.cs" />
+    <Compile Include="IevrManager/Models/**/*.cs" />
+    <Compile Include="IevrManager/Helpers/Logger.cs;IevrManager/Helpers/FileSystemHelper.cs;IevrManager/Helpers/SteamHelper.cs" />
+    <Compile Include="IevrManager/Managers/ConfigManager.cs;IevrManager/Managers/LastInstallManager.cs;IevrManager/Managers/ModManager.cs;IevrManager/Managers/ProfileManager.cs;IevrManager/Managers/ViolaIntegration.cs" />
+    <EmbeddedResource Remove="**/*.resx" />
+    <AvaloniaResource Include="Assets/**" />
+    <AvaloniaResource Include="NdsViewer/Assets/**" />
+    <AvaloniaResource Include="NdsViewerShared/Rendering/Assets/**" />
+  </ItemGroup>
+</Project>

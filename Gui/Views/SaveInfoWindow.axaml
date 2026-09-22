@@ -1,0 +1,175 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:IESEViewModel.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converter="clr-namespace:IESE.Converter"
+    mc:Ignorable="d"
+    x:Class="IESE.Views.SaveInfoWindow"
+    x:DataType="vm:SaveInfoViewModel"
+    Height="200"
+    Width="430"
+    Title="Save Info Window"
+    WindowStartupLocation="CenterOwner"
+>
+    <Window.Resources>
+        <converter:MaxLinkLevelConverter x:Key="MaxLinkLevelConverter" />
+        <converter:BitmapConverter x:Key="BitmapConverter" />
+    </Window.Resources>
+    <Design.DataContext>
+        <vm:SaveInfoViewModel />
+    </Design.DataContext>
+
+    <TabControl>
+        <TabItem Header="Head">
+            <StackPanel>
+                <Grid RowDefinitions="*,*,*" ColumnDefinitions="*,*">
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                    >User Name</TextBlock>
+                    <TextBox
+                        Grid.Column="1"
+                        Grid.Row="0"
+                        Text="{Binding UserName}"
+                    />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                    >Team Name</TextBlock>
+                    <TextBox
+                        Grid.Column="1"
+                        Grid.Row="1"
+                        Text="{Binding TeamName}"
+                    />
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="0"
+                    >Current Chapter</TextBlock>
+                    <NumericUpDown
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Minimum="0"
+                        Maximum="10"
+                        FormatString="N0"
+                        Value="{Binding CurrentChapter}"
+                    />
+                </Grid>
+                <StackPanel
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                >
+                    <TextBlock VerticalAlignment="Center">Hrs :</TextBlock>
+                    <NumericUpDown
+                        Minimum="0"
+                        Maximum="999"
+                        FormatString="N0"
+                        VerticalAlignment="Center"
+                        Value="{Binding Hours}"
+                    />
+                    <TextBlock VerticalAlignment="Center">Min :</TextBlock>
+                    <NumericUpDown
+                        Minimum="0"
+                        Maximum="59"
+                        FormatString="N0"
+                        VerticalAlignment="Center"
+                        Value="{Binding Minutes}"
+                    />
+                </StackPanel>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Money">
+            <StackPanel>
+                <Grid RowDefinitions="*,*" ColumnDefinitions="*, *">
+                    <TextBlock Grid.Row="0" Grid.Column="0">Prestige</TextBlock>
+                    <NumericUpDown
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Minimum="0"
+                        Maximum="9999999"
+                        FormatString="N0"
+                        Value="{Binding Prestige}"
+                    />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        IsVisible="{Binding !IsGalaxy}"
+                    >Friendship</TextBlock>
+                    <NumericUpDown
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Minimum="0"
+                        Maximum="9999999"
+                        FormatString="N0"
+                        IsVisible="{Binding !IsGalaxy}"
+                        Value="{Binding Friendship}"
+                    />
+                </Grid>
+                <ItemsControl Name="CoinList"
+                              IsVisible="{Binding IsGalaxy}"
+                              ItemsSource="{Binding Coins}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="32" Width="32"
+                                       Source="{Binding Key, Converter={StaticResource BitmapConverter}}"/>
+                                <NumericUpDown Value="{Binding Value}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Extras &amp; Download">
+            <StackPanel>
+                <Grid RowDefinitions="*,*" ColumnDefinitions="Auto,*">
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        IsVisible="{Binding IsGo}"
+                    >Unlock Link Level</TextBlock>
+                    <ToggleSwitch
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        OnContent=""
+                        OffContent=""
+                        IsChecked="{Binding UnlockLink}"
+                        IsVisible="{Binding IsGo}"
+                    />
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        IsVisible="{Binding !IsGo}"
+                    >Link Level</TextBlock>
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                    >Unlock Data Download + Password<LineBreak
+                        /> + Link with Go Content</TextBlock>
+                    <NumericUpDown
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Minimum="0"
+                        FormatString="N0"
+                        Value="{Binding LinkLevel}"
+                        Maximum="{Binding CurrentChapter, Converter={StaticResource MaxLinkLevelConverter}}"
+                        IsVisible="{Binding !IsGo}"
+                    />
+                    <ToggleSwitch
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        OnContent=""
+                        OffContent=""
+                        IsChecked="{Binding UnlockAll}"
+                    />
+                </Grid>
+            </StackPanel>
+        </TabItem>
+    </TabControl>
+</Window>

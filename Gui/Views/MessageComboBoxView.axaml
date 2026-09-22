@@ -1,0 +1,28 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:IESEViewModel.ViewModels"
+        mc:Ignorable="d"
+        x:Class="IESE.Views.MessageComboBoxView"
+        x:DataType="vm:MessageComboBoxViewModel"
+        Title="{Binding Title}"
+        WindowStartupLocation="CenterOwner">
+    <Design.DataContext>
+        <vm:MessageComboBoxViewModel />
+    </Design.DataContext>
+    <Grid RowDefinitions="*,*" ColumnDefinitions="2*,*,*">
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                 Text="{Binding Text}"/>
+        <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                  ItemsSource="{Binding Players}"
+                  SelectedItem="{Binding SelectedPlayer}">
+            
+        </ComboBox>
+        <Button Grid.Row="1" Grid.Column="1"
+                Command="{Binding CancelCommand}">Cancel</Button>
+        <Button Grid.Row="1" Grid.Column="2" 
+                Content="{Binding ConfirmText}"
+                Command="{Binding ConfirmCommand}"/>
+    </Grid>
+</Window>

@@ -1,0 +1,85 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Multi-target for maximum compatibility -->
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>$(NoWarn);SYSLIB1225</NoWarn>
+    <!-- Copie toutes les dépendances NuGet dans le dossier de sortie, pour que
+         node-api-dotnet (bun:ffi/Bun) résolve l'assembly + ses deps depuis un
+         seul dossier. -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       Consolidated Libraries (previously external projects)
+       CfgBinEditor, CriFsV2Lib, Viola, SaveEditor now integrated
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       NuGet Packages
+       ═══════════════════════════════════════════════════════════════════════════ -->
+  <ItemGroup>
+    <PackageReference Include="MoonSharp" />
+    <PackageReference Include="SharpGLTF.Toolkit" />
+    <!-- ImageSharp 4.x requires a commercial restore key; keep the latest free 3.x line. -->
+    <PackageReference Include="SixLabors.ImageSharp" />
+    <PackageReference Include="System.IO.Hashing" />
+    <PackageReference Include="CommunityToolkit.HighPerformance" />
+    
+    <!-- Texture Compression -->
+    <PackageReference Include="BCnEncoder.Net" />
+
+    <!-- Compression -->
+    <PackageReference Include="K4os.Compression.LZ4" />
+
+    <!-- Database -->
+    <!-- 10.0.11 et non 10.0.0 : la 10.0.0 tirait SQLitePCLRaw 2.1.11, porteur de
+         GHSA-2m69-gcr7-jv3q (gravité élevée), signalé à chaque build par NU1903. Montée de
+         patch dans la même majeure/mineure ; l'absence de NU1903 est vérifiée par un restore,
+         pas supposée. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+
+    <!-- Steam content delivery (download natif des depots, remplace steamcmd) -->
+    <PackageReference Include="SteamKit2" />
+    <PackageReference Include="AuroraLib.Compression" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+  </ItemGroup>
+
+  <!-- The former ndsSharp core and plugin projects are source domains, not
+       independent runtimes. Keep their code in the single IECODE core graph. -->
+  <ItemGroup>
+    <Compile Include="**/*.cs"
+             Exclude="NdsSharp/**;NdsSharpPlugins/**;bin/**;obj/**" />
+    <Compile Include="NdsSharp/**/*.cs"
+             Exclude="NdsSharp/**/bin/**;NdsSharp/**/obj/**" />
+    <Compile Include="NdsSharpPlugins/**/*.cs"
+             Exclude="NdsSharpPlugins/**/bin/**;NdsSharpPlugins/**/obj/**" />
+    <EmbeddedResource Include="NdsSharp/**/*.resx"
+                      Exclude="NdsSharp/**/bin/**;NdsSharp/**/obj/**" />
+    <EmbeddedResource Include="NdsSharpPlugins/**/*.resx"
+                      Exclude="NdsSharpPlugins/**/bin/**;NdsSharpPlugins/**/obj/**" />
+    <None Include="NdsSharp/**/*.json"
+          Exclude="NdsSharp/**/bin/**;NdsSharp/**/obj/**" />
+    <None Include="NdsSharpPlugins/**/*.json"
+          Exclude="NdsSharpPlugins/**/bin/**;NdsSharpPlugins/**/obj/**" />
+  </ItemGroup>
+
+  <!-- Expose les types internes (ex. SteamTokenStore) au projet de tests. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="IECODE.Core.Tests" />
+  </ItemGroup>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       Embedded Resources
+       ═══════════════════════════════════════════════════════════════════════════ -->
+  <ItemGroup>
+  </ItemGroup>
+
+</Project>

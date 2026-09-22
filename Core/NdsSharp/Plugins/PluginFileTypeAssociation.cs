@@ -1,4 +1,6 @@
+using System.Text;
 using System.Text.RegularExpressions;
+using ndsSharp.Core.Data;
 using ndsSharp.Core.Objects.Files;
 
 namespace ndsSharp.Core.Plugins;
@@ -18,8 +20,27 @@ public class PluginFileTypeAssociation(Type fileType, string extension, string[]
         matched |= RegexMatches.Any(regex => regex.IsMatch(file.Path));
         matched |= MagicMatches.Any(magic =>
         {
-            throw new NotImplementedException();
+            if (file.Pointer.Owner is null || string.IsNullOrWhiteSpace(magic))
+            {
+                return false;
+            }
+
+            using var reader = file.Pointer.Load();
+            var data = reader.GetBuffer();
+            var expected = ParseMagic(magic);
+            return data.AsSpan().StartsWith(expected);
         });
         return matched;
+    }
+
+    private static byte[] ParseMagic(string magic)
+    {
+        var compact = magic.Replace(" ", string.Empty, StringComparison.Ordinal);
+        if (compact.Length > 0 && compact.Length % 2 == 0 && compact.All(Uri.IsHexDigit))
+        {
+            return Convert.FromHexString(compact);
+        }
+
+        return Encoding.ASCII.GetBytes(magic);
     }
 }

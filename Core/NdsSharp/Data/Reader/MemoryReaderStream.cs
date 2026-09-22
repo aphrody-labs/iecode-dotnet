@@ -21,7 +21,8 @@ public class MemoryReaderStream(MemoryReader reader) : Stream
 
     public override void Flush()
     {
-        throw new NotImplementedException();
+        // This stream is a read-only view over MemoryReader; there is no
+        // buffered write state to flush.
     }
 
     public override int Read(byte[] buffer, int offset, int count)
@@ -52,11 +53,11 @@ public class MemoryReaderStream(MemoryReader reader) : Stream
 
     public override void SetLength(long value)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException("A MemoryReaderStream cannot be resized.");
     }
 
     public override void Write(byte[] buffer, int offset, int count)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException("A MemoryReaderStream is read-only.");
     }
 }

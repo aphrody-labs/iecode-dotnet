@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using Avalonia;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
@@ -32,6 +33,6 @@ public class BitmapConverter : IValueConverter
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return AvaloniaProperty.UnsetValue;
     }
 }

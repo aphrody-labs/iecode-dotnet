@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Globalization;
+using Avalonia;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml;
 
@@ -45,7 +46,14 @@ public class EnumToStringConverter : IValueConverter
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        if (value is not string text || !targetType.IsEnum)
+        {
+            return AvaloniaProperty.UnsetValue;
+        }
+
+        return Enum.TryParse(targetType, text, true, out var parsed)
+            ? parsed
+            : AvaloniaProperty.UnsetValue;
     }
 }
 
@@ -77,7 +85,7 @@ public class EnumHasFlagConverter : IValueConverter
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return AvaloniaProperty.UnsetValue;
     }
 }
 
@@ -93,7 +101,7 @@ public class EnumEqualsConverter : IValueConverter
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return AvaloniaProperty.UnsetValue;
     }
 }
 

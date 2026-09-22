@@ -224,32 +224,35 @@ file class FastRepeat<T> : ICollection<T>
 
     public void Add(T item)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException("FastRepeat is a read-only repeated view.");
     }
 
     public void Clear()
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException("FastRepeat is a read-only repeated view.");
     }
 
     public bool Contains(T item)
     {
-        throw new NotImplementedException();
+        return EqualityComparer<T>.Default.Equals(Item, item) && Count > 0;
     }
 
     public bool Remove(T item)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException("FastRepeat is a read-only repeated view.");
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        throw new NotImplementedException();
+        return GetEnumerator();
     }
 
     public IEnumerator<T> GetEnumerator()
     {
-        throw new NotImplementedException();
+        for (var i = 0; i < Count; i++)
+        {
+            yield return Item;
+        }
     }
 
     public void CopyTo(T[] array, int arrayIndex)

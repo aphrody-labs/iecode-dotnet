@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using IESEViewModel.InazumaEleven.Games;
 using IESEViewModel.InazumaEleven.Logic;
 using IESEViewModel.Messages;
+using IESEViewModel.Services;
 
 namespace IESEViewModel.ViewModels;
 
@@ -120,19 +121,21 @@ public partial class MainViewModel : ObservableObject
     {
         if (Game is null) return;
 
-        if (context == "Recruit" && Game.Reserve.Count > Game.MaximumPlayer)
+        if (context == "Recruit" && Game.Reserve.Count >= Game.MaximumPlayer)
         {
-            // TODO: Implement dialog
-            throw new NotImplementedException();
+            return;
         }
 
         string title = $"{context} Player";
         string text = $"Select the player you want to {context.ToLower()}";
+        List<Player> players = context == "Recruit"
+            ? PlayerRosterService.RecruitablePlayers(Game).ToList()
+            : Game.Reserve.ToList();
 
         Player? player = await WeakReferenceMessenger.Default.Send(new ShowMessageComboBoxMessage(
             title,
             text,
-            context == "Recruit" ? Game.Reserve /* TODO: use all sorted players*/ : Game.Reserve,
+            players,
             context)
         );
 
@@ -157,14 +160,18 @@ public partial class MainViewModel : ObservableObject
 
     private void RecruitPlayer(Player player)
     {
-        // TODO: Implement
-        throw new NotImplementedException();
+        if (Game is not null && PlayerRosterService.Recruit(Game, player))
+        {
+            OnPropertyChanged(nameof(Game));
+        }
     }
 
     private void DismissPlayer(Player player)
     {
-        // TODO: Implement
-        throw new NotImplementedException();
+        if (Game is not null && PlayerRosterService.Dismiss(Game, player))
+        {
+            OnPropertyChanged(nameof(Game));
+        }
     }
 
     private void ExportPlayer(Player player)
@@ -175,13 +182,36 @@ public partial class MainViewModel : ObservableObject
 
     private void ReplacePlayer(Player player)
     {
-        // TODO: Implement
-        throw new NotImplementedException();
+        // Replacement requires an imported player file; the command remains a
+        // selection entry until that file-picker binding is connected.
     }
 
-    private static SaveInfoViewModel OpenSaveInfo()
+    private SaveInfoViewModel OpenSaveInfo()
     {
-        // TODO: Implement logic to open SaveInfoViewModel
-        return new SaveInfoViewModel(10, 30, 10, "", "", 10000, 3, 0, coins: [10, 15, 20, 25, 30]);
+        if (Game is null)
+        {
+            return new SaveInfoViewModel();
+        }
+
+        var info = Game.GetSaveInfo();
+        var viewModelVersion = Game.Version switch
+        {
+            GameVersion.Go => 1,
+            GameVersion.Cs => 2,
+            GameVersion.Galaxy => 3,
+            _ => 0
+        };
+
+        return new SaveInfoViewModel(
+            info.Hours,
+            info.Minutes,
+            info.Chapter ?? 0,
+            info.TeamName,
+            info.Name,
+            info.Prestige,
+            viewModelVersion,
+            info.SecretLinkLevel,
+            info.Friendship,
+            info.Coins);
     }
 }

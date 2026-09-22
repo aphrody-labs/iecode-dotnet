@@ -32,10 +32,10 @@ if not os.path.exists("km/Kamek.exe"):
 
 command = ""
 if debug:
-	command = "cw\mwcceppc.exe " + "-I- -i ./includes/ -i ./includes/Kamek/ -i ./source/ -Cpp_exceptions off -enc SJIS -enum int -Os -use_lmw_stmw on -fp hard -rostr -sdata 0 -sdata2 0 -d DEBUG -c -o "
+	command = r"cw\mwcceppc.exe " + "-I- -i ./includes/ -i ./includes/Kamek/ -i ./source/ -Cpp_exceptions off -enc SJIS -enum int -Os -use_lmw_stmw on -fp hard -rostr -sdata 0 -sdata2 0 -d DEBUG -c -o "
 else:
-	command = "cw\mwcceppc.exe " + "-I- -i ./includes/ -i ./includes/Kamek/ -i ./source/ -Cpp_exceptions off -enc SJIS -enum int -Os -use_lmw_stmw on -fp hard -rostr -sdata 0 -sdata2 0 -c -o "
-asm_cmd = "cw\mwasmeppc.exe "  + "-I- -i ./includes/ -i ./includes/Kamek/ -c -o "
+	command = r"cw\mwcceppc.exe " + "-I- -i ./includes/ -i ./includes/Kamek/ -i ./source/ -Cpp_exceptions off -enc SJIS -enum int -Os -use_lmw_stmw on -fp hard -rostr -sdata 0 -sdata2 0 -c -o "
+asm_cmd = r"cw\mwasmeppc.exe "  + "-I- -i ./includes/ -i ./includes/Kamek/ -c -o "
 
 # Clean the entire build folder first if it exists
 if os.path.exists("build"):
@@ -98,7 +98,7 @@ log("Linking...")
 object_files = " ".join([task[1] for task in tasks])
 asm_obj_files = " ".join([a_task[1] for a_task in asm_tasks])
 
-kamek_cmd = f"km\Kamek.exe {object_files} {asm_obj_files} -externals=symbols.txt -output-kamek=CustomCode.bin"
+kamek_cmd = rf"km\Kamek.exe {object_files} {asm_obj_files} -externals=symbols.txt -output-kamek=CustomCode.bin"
 
 if subprocess.call(kamek_cmd, shell=True) != 0:
     delete_encoded(tasks)

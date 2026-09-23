@@ -20,7 +20,6 @@
     <PackageVersion Include="K4os.Compression.LZ4" Version="1.3.8" />
     <PackageVersion Include="Material.Icons" Version="2.1.10" />
     <PackageVersion Include="Material.Icons.Avalonia" Version="2.1.10" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.12" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
     <PackageVersion Include="MoonSharp" Version="2.0.0" />
     <PackageVersion Include="NAudio" Version="2.2.1" />

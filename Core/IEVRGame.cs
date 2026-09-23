@@ -123,11 +123,11 @@ public sealed class IEVRGame : IDisposable
     /// <summary>
     /// Résout le chemin du jeu par défaut (aucun chemin explicite fourni). Ordre :
     /// 1. variable d'env <c>IECODE_GAME_PATH</c> (override explicite) ;
-    /// 2. premier candidat existant (install Linux steamcmd, libs Steam usuelles) contenant
+    /// 2. premier candidat existant (bibliothèques Steam usuelles Linux/WSL) contenant
     ///    <c>data/cpk_list.cfg.bin</c> ;
     /// 3. les racines Steam dérivées de l'environnement hôte ;
     /// 4. le répertoire courant en dernier recours.
-    /// Permet d'utiliser la CLI sans <c>--game</c> sur un hôte Linux (cf. install VPS).
+    /// Permet d'utiliser la CLI sans <c>--game</c> sur un poste Windows ou WSL.
     /// </summary>
     public static string ResolveDefaultGamePath()
     {
@@ -138,7 +138,6 @@ public sealed class IEVRGame : IDisposable
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         string[] candidates =
         [
-            Path.Combine(home, ".local", "share", "Steam", "iecode", "inazuma"),
             Path.Combine(home, ".local", "share", "Steam", "steamapps", "common", "INAZUMA ELEVEN Victory Road"),
             Path.Combine(home, ".steam", "steam", "steamapps", "common", "INAZUMA ELEVEN Victory Road"),
         ];

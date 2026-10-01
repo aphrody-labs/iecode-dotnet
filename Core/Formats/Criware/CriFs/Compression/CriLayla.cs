@@ -112,7 +112,10 @@ public static unsafe class CriLayla
         return result;
     }
 
-    private static void Decompress(byte* input, byte* output, int uncompSizeOfCompData, int uncompHeaderOffset)
+    /// <summary>
+    /// Decompresses raw CRILAYLA bytes directly to an output buffer pointer.
+    /// </summary>
+    public static void Decompress(byte* input, byte* output, int uncompSizeOfCompData, int uncompHeaderOffset)
     {
         // Copy uncompressed 0x100 header (after compressed data) to start of file
         byte* uncompressedDataPtr = input + uncompHeaderOffset + 0x10;

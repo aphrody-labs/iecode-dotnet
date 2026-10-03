@@ -19,7 +19,8 @@ public static class WaveArchiveExtensions
             {
                 WaveType.PCM8 => PCM.PCM8ToPCM16(rawWaveData),
                 WaveType.PCM16 => rawWaveData,
-                WaveType.ADPCM => ADPCM.Decode(rawWaveData, rawWaveData.Length * 2)
+                WaveType.ADPCM => ADPCM.Decode(rawWaveData, rawWaveData.Length * 2),
+                _ => throw new InvalidDataException($"Unknown wave type: {waveInfo.WaveType}.")
             };
 
 

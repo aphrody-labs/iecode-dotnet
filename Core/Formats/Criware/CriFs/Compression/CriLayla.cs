@@ -1,380 +1,126 @@
-using IECODE.Core.Formats.Criware.CriFs.Utilities;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using System.Buffers.Binary;
 using IECODE.Core.Formats.Criware.CriFs.Definitions.Utilities;
 
 namespace IECODE.Core.Formats.Criware.CriFs.Compression;
 
-/// <summary>
-/// Code for dealing with CRI Layla Compression.
-/// </summary>
-public static unsafe class CriLayla
+/// <summary>Bounded CRILAYLA compression reader.</summary>
+public static class CriLayla
 {
-    /// <summary>
-    /// Size of uncompressed data under CRILAYLA.
-    /// </summary>
     public const int UncompressedDataSize = 0x100;
-
-    /// <summary>
-    /// Minimum length of LZ77 copy command. 
-    /// </summary>
     public const int MinCopyLength = 3;
+    private static readonly int[] CopyLengthWidths = [2, 3, 5, 8];
 
-    /// <summary>
-    /// Checks if a file is compressed by checking the signature at the start of it.
-    /// </summary>
-    /// <param name="data">Pointer to start of the file data.</param>
-    /// <param name="compressedDataSize">Size of compressed data.</param>
-    /// <returns>True if compressed, else false.</returns>
-    public static bool IsCompressed(byte* data, out int compressedDataSize)
+    public static bool IsCompressed(ReadOnlySpan<byte> data, out int compressedDataSize)
     {
-        var result = *(long*)data == 0x414C59414C495243;
-        compressedDataSize = *(int*)(data + 12) + 0x10 + UncompressedDataSize;
-        return result;
+        compressedDataSize = 0;
+        if (data.Length < 16 || !data[..8].SequenceEqual("CRILAYLA"u8)) return false;
+        uint offset = BinaryPrimitives.ReadUInt32LittleEndian(data[12..]);
+        if (offset > int.MaxValue - 16 - UncompressedDataSize)
+            throw new InvalidDataException("CRILAYLA header size exceeds the input limit.");
+        compressedDataSize = (int)offset + 16 + UncompressedDataSize;
+        return true;
     }
 
-    /*
-        Explanation of CRILayla
-        
-        == General Structure ==
-        - LZSS based.  (offset & length pairs, can encode raw byte)  
-        - At end of file is 0x100 of uncompressed data, this is data that will be start of file.  
-        
-        == Compression Details == 
-            
-            Block uses compression flag, if flag is set to 0, next 8 bits are copied to output raw.
-        
-                1 ?????????
-                | 
-                compression flag 
-            
-            Data is decompressed from end, i.e.
-                *writePtr = ???
-                writePtr--
-                
-                We write the decompressed data from its end.
-                
-            Copy Block
-            
-                1 aaaaaaaaaaaaa bbb
-                | |             | variable length 
-                | 13 bits of offset
-                compression flag 
-                
-                To get length we read in the following (fibbonaci) order i.e.
-                    - 2 bits (max 3)
-                    - 3 bits (max 7)
-                    - 5 bits (max 31)
-                    - 8 bits
-                    
-                And add the length to existing length variable.
-                If the max value is returned, we read next number of bits in fib sequence, up to 8 bits. Then 
-                read 8s until max value no longer returned.    
-    */
-
-    // Note: SkipLocalsInit would be nice but it ruins loop alignment
-
-    /// <summary>
-    /// Decompresses a compressed file to a byte array.
-    /// </summary>
-    /// <param name="input">Pointer to start of compressed data (CRILAYLA header).</param>
-    /// <returns>Byte array of the file after decompression.</returns>
-    public static byte[] DecompressToArray(byte* input)
+    public static ArrayRental DecompressToArrayPool(ReadOnlySpan<byte> input)
     {
-        // Read sizes from header.
-        int uncompSizeOfCompData = *(int*)(input + 8);
-        int uncompHeaderOffset = *(int*)(input + 12);
-
-        // Create array for Result
-        var result = GC.AllocateUninitializedArray<byte>(uncompSizeOfCompData + UncompressedDataSize);
-        fixed (byte* resultPtr = result)
-            Decompress(input, resultPtr, uncompSizeOfCompData, uncompHeaderOffset);
-
-        return result;
-    }
-
-    /// <summary>
-    /// Decompresses a compressed file to a pooled byte array.
-    /// </summary>
-    /// <param name="input">Pointer to start of compressed data (CRILAYLA header).</param>
-    /// <returns>Pooled array of the file after decompression, please dispose after you're done with it.</returns>
-    public static ArrayRental DecompressToArrayPool(byte* input)
-    {
-        // Read sizes from header.
-        int uncompSizeOfCompData = *(int*)(input + 8);
-        int uncompHeaderOffset = *(int*)(input + 12);
-
-        // Create array for Result
-        var result = new ArrayRental(uncompSizeOfCompData + UncompressedDataSize);
-        fixed (byte* resultPtr = result.RawArray)
-            Decompress(input, resultPtr, uncompSizeOfCompData, uncompHeaderOffset);
-
-        return result;
-    }
-
-    /// <summary>
-    /// Decompresses raw CRILAYLA bytes directly to an output buffer pointer.
-    /// </summary>
-    public static void Decompress(byte* input, byte* output, int uncompSizeOfCompData, int uncompHeaderOffset)
-    {
-        // Copy uncompressed 0x100 header (after compressed data) to start of file
-        byte* uncompressedDataPtr = input + uncompHeaderOffset + 0x10;
-        Unsafe.CopyBlockUnaligned(output, uncompressedDataPtr, UncompressedDataSize);
-
-        // Pointer to which we're copying data to.
-        byte* writePtr = output + UncompressedDataSize + uncompSizeOfCompData - 1;
-        byte* minAddr = output + UncompressedDataSize;
-
-        // Bitstream State
-        byte* compressedDataPtr = uncompressedDataPtr;
-        int bitsTillNextByte = 0; // Bits left in the bitstream.
-
-        while (writePtr >= minAddr) // Check if we're done writing from end
+        var rental = new ArrayRental(GetOutputSize(input));
+        try
         {
-            // Check for 1 bit compression flag.
-            if (GetNextBit(ref compressedDataPtr, ref bitsTillNextByte) > 0)
+            Decompress(input, rental.Span);
+            return rental;
+        }
+        catch
+        {
+            rental.Dispose();
+            throw;
+        }
+    }
+
+    /// <summary>Maximum decoded allocation accepted for untrusted input (256 MiB).</summary>
+    public const int MaximumOutputSize = 256 * 1024 * 1024;
+
+    /// <summary>Decodes a complete, bounded CRILAYLA buffer.</summary>
+    public static byte[] DecompressToArray(ReadOnlySpan<byte> input)
+    {
+        var output = new byte[GetOutputSize(input)];
+        Decompress(input, output);
+        return output;
+    }
+
+    private static int GetOutputSize(ReadOnlySpan<byte> input)
+    {
+        if (input.Length < 16 || !input[..8].SequenceEqual("CRILAYLA"u8))
+            throw new InvalidDataException("Invalid CRILAYLA header.");
+        uint decodedSize = BinaryPrimitives.ReadUInt32LittleEndian(input[8..]);
+        uint headerOffset = BinaryPrimitives.ReadUInt32LittleEndian(input[12..]);
+        if (decodedSize > MaximumOutputSize - UncompressedDataSize ||
+            headerOffset > (uint)(input.Length - 16) ||
+            input.Length - 16 - (long)headerOffset < UncompressedDataSize)
+            throw new InvalidDataException("CRILAYLA size exceeds the input or output limit.");
+
+        return (int)decodedSize + UncompressedDataSize;
+    }
+
+    private static void Decompress(ReadOnlySpan<byte> input, Span<byte> output)
+    {
+        int headerOffset = (int)BinaryPrimitives.ReadUInt32LittleEndian(input[12..]);
+        input.Slice(16 + (int)headerOffset, UncompressedDataSize).CopyTo(output);
+        var bits = new ReverseBitReader(input.Slice(16, (int)headerOffset));
+        int position = output.Length - 1;
+        while (position >= UncompressedDataSize)
+        {
+            if (bits.Read(1) == 0)
             {
-                int offset = Read13(ref compressedDataPtr, ref bitsTillNextByte) + MinCopyLength;
-                int length = MinCopyLength;
-
-                // Read variable fibonnaci length (unrolled).
-                int thisLevel = Read2(ref compressedDataPtr, ref bitsTillNextByte);
-                length += thisLevel;
-
-                if (thisLevel == ((1 << 2) - 1))
-                {
-                    thisLevel = ReadMax8(ref compressedDataPtr, ref bitsTillNextByte, 3);
-                    length += thisLevel;
-
-                    if (thisLevel == ((1 << 3) - 1))
-                    {
-                        thisLevel = ReadMax8(ref compressedDataPtr, ref bitsTillNextByte, 5);
-                        length += thisLevel;
-
-                        if (thisLevel == ((1 << 5) - 1))
-                        {
-                            do
-                            {
-                                thisLevel = Read8(ref compressedDataPtr, ref bitsTillNextByte);
-                                length += thisLevel;
-                            }
-                            while (thisLevel == byte.MaxValue); // 0b11111111
-                        }
-                    }
-                }
-
-                // LZ77 Copy Below.
-
-                // The optimal way to write this loop depends on average length of copy, 
-                // and average length of copy depends on the data we're dealing with.  
-
-                // As such, this would vary per files.
-                // For text, length tends to be around 6 on average, for models around 9. 
-                // In this implementation we'll put bias towards short copies where length < 10.
-
-                // Note: Min length is 3 (also seems to be most common length), so we can keep that out of the
-                // loop and make best use of pipelining.
-
-                *writePtr = writePtr[offset];
-                *(writePtr - 1) = (writePtr - 1)[offset];
-                *(writePtr - 2) = (writePtr - 2)[offset];
-
-                const int defaultPipelineLength = 3; // Pipeline as in 'CPU Pipelining'
-                const int extraPipelineLength = 8;
-
-                if (length < extraPipelineLength)
-                {
-                    writePtr -= defaultPipelineLength;
-                    if (length == defaultPipelineLength)
-                        continue;
-
-                    var numLeft = length - defaultPipelineLength;
-                    for (int x = 0; x < numLeft; x++)
-                    {
-                        *writePtr = writePtr[offset];
-                        writePtr--;
-                    }
-                }
-                else
-                {
-                    *(writePtr - 3) = (writePtr - 3)[offset];
-                    *(writePtr - 4) = (writePtr - 4)[offset];
-                    *(writePtr - 5) = (writePtr - 5)[offset];
-                    *(writePtr - 6) = (writePtr - 6)[offset];
-                    *(writePtr - 7) = (writePtr - 7)[offset];
-                    writePtr -= extraPipelineLength;
-                    var numLeft = length - extraPipelineLength;
-                    for (int i = 0; i < numLeft; i++)
-                    {
-                        *writePtr = writePtr[offset];
-                        writePtr--;
-                    }
-                }
+                output[position--] = (byte)bits.Read(8);
+                continue;
             }
-            else
+            int offset = bits.Read(13) + MinCopyLength;
+            int length = MinCopyLength;
+            foreach (int width in CopyLengthWidths)
             {
-                // verbatim byte
-                *writePtr = Read8(ref compressedDataPtr, ref bitsTillNextByte);
-                writePtr--;
+                int value;
+                do
+                {
+                    value = bits.Read(width);
+                    length = checked(length + value);
+                    if (length > position - UncompressedDataSize + 1)
+                        throw new InvalidDataException("CRILAYLA copy exceeds the decoded payload.");
+                } while (width == 8 && value == 255);
+                if (value != (1 << width) - 1) break;
             }
+            if (length > position - UncompressedDataSize + 1 || offset >= output.Length - position)
+                throw new InvalidDataException("Invalid CRILAYLA back-reference.");
+            for (int i = 0; i < length; i++, position--)
+                output[position] = output[position + offset];
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static byte GetNextBit(ref byte* compressedDataPtr, ref int bitsLeft)
+    private ref struct ReverseBitReader
     {
-        // Reads a single bit.
-        byte currentByte;
-
-        // Note: having if/else rather than single if generated faster runtime despite larger codegen.
-        if (bitsLeft != 0)
+        private readonly ReadOnlySpan<byte> _data;
+        private int _position;
+        private int _remaining;
+        public ReverseBitReader(ReadOnlySpan<byte> data)
         {
-            currentByte = *(compressedDataPtr);
-            bitsLeft--;
+            _data = data;
+            _position = data.Length;
+            _remaining = 0;
         }
-        else
+        public int Read(int count)
         {
-            compressedDataPtr--;
-            currentByte = *(compressedDataPtr);
-            bitsLeft = 7;
+            int value = 0;
+            for (int i = 0; i < count; i++)
+            {
+                if (_remaining == 0)
+                {
+                    if (_position == 0) throw new InvalidDataException("Truncated CRILAYLA bitstream.");
+                    _position--;
+                    _remaining = 8;
+                }
+                value = (value << 1) | ((_data[_position] >> --_remaining) & 1);
+            }
+            return value;
         }
-
-        return (byte)((currentByte >> bitsLeft) & 1);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int Read13(ref byte* compressedDataPtr, ref int bitsLeft)
-    {
-        // Reads bits, and advances stream backwards.
-        int bitCount = 13;
-        byte currentByte;
-
-        // Read first set.
-        if (bitsLeft != 0)
-        {
-            currentByte = *(compressedDataPtr);
-        }
-        else
-        {
-            compressedDataPtr--;
-            currentByte = *(compressedDataPtr);
-            bitsLeft = 8;
-        }
-
-        int bitsThisRound = bitsLeft > bitCount ? bitCount : bitsLeft;
-        int result = (currentByte >> (bitsLeft - bitsThisRound)) & ((1 << bitsThisRound) - 1);
-        bitCount -= bitsThisRound;
-
-        // bitsleft == 0 is guaranteed, so we reset to 8
-        bitsLeft = 8;
-        compressedDataPtr--;
-        currentByte = *compressedDataPtr;
-
-        // Read more from next byte.
-        bitsThisRound = bitsLeft > bitCount ? bitCount : bitsLeft;
-        result <<= bitsThisRound;
-        result |= (currentByte >> (bitsLeft - bitsThisRound)) & ((1 << bitsThisRound) - 1);
-
-        bitCount -= bitsThisRound;
-
-        // It's possible, we might need 3 reads in some cases so we keep unrolling
-        if (bitCount <= 0)
-        {
-            bitsLeft -= bitsThisRound;
-            return result;
-        }
-
-        // Read byte if needed
-        bitsLeft = 8;
-        compressedDataPtr--;
-        currentByte = *(compressedDataPtr);
-
-        // If there are more to read from next byte.
-        result <<= bitCount;
-        result |= (currentByte >> (bitsLeft - bitCount)) & ((1 << bitCount) - 1);
-        bitsLeft -= bitCount;
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static byte Read8(ref byte* compressedDataPtr, ref int bitsLeft)
-    {
-        compressedDataPtr--;
-        if (bitsLeft != 0)
-        {
-            // We must split between 2 reads.
-            int extraBitCount = 8 - bitsLeft;
-            int high = *(compressedDataPtr + 1) & ((1 << bitsLeft) - 1);
-            var low = (*(compressedDataPtr) >> (8 - extraBitCount)) & ((1 << extraBitCount) - 1);
-
-            // If there are more to read from next byte.
-            return (byte)(high << extraBitCount | low);
-        }
-
-        return *(compressedDataPtr);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static byte Read2(ref byte* compressedDataPtr, ref int bitsLeft)
-    {
-        const int bitCount = 2;
-
-        // Note: Fast/Common Path.
-        bool hasNewBits = bitsLeft == 0;
-        if (bitsLeft >= bitCount || hasNewBits)
-        {
-            // Branchless Programming
-            bitsLeft += (Unsafe.As<bool, byte>(ref hasNewBits) * 8) - bitCount;
-            compressedDataPtr -= (Unsafe.As<bool, byte>(ref hasNewBits));
-
-            // We removed from bitsLeft above, so we don't subtract here. This is necessary because branchless.
-            return (byte)((*(compressedDataPtr) >> (bitsLeft)) & 0b11); ;
-        }
-
-        // Only possible scenario is if bitsLeft == 1
-        // bitsLeft == 0 & bitsLeft == 2 will take fast path.
-        int high = *(compressedDataPtr) & 1;
-        int low = (*(compressedDataPtr - 1) >> 7) & 1; // derived from ReadMax8's, simplified
-        bitsLeft = 7; // Guaranteed
-        compressedDataPtr--;
-        return (byte)(high << 1 | low);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static byte ReadMax8(ref byte* compressedDataPtr, ref int bitsLeft, int bitCount)
-    {
-        // Reads bits, and advances stream backwards.
-        byte currentByte;
-
-        // Note: having if/else rather than single if generated faster runtime despite larger codegen.
-        if (bitsLeft != 0)
-        {
-            currentByte = *(compressedDataPtr);
-        }
-        else
-        {
-            compressedDataPtr--;
-            currentByte = *(compressedDataPtr);
-            bitsLeft = 8;
-        }
-
-        int bitsThisRound = bitsLeft > bitCount ? bitCount : bitsLeft;
-        int result = (currentByte >> (bitsLeft - bitsThisRound)) & ((1 << bitsThisRound) - 1);
-
-        bitCount -= bitsThisRound;
-        bitsLeft -= bitsThisRound;
-        if (bitCount <= 0)
-            return (byte)result;
-
-        // This path can only be followed if bitsleft == 0
-        compressedDataPtr--;
-        currentByte = *(compressedDataPtr);
-        bitsLeft = 8;
-
-        // If there are more to read from next byte.
-        result <<= bitCount;
-        result |= (currentByte >> (bitsLeft - bitCount)) & ((1 << bitCount) - 1);
-        bitsLeft -= bitCount;
-        return (byte)result;
-    }
 }

@@ -123,6 +123,14 @@
         "resolved": "0.8.7",
         "contentHash": "+4VpxvzEKaHpfTjsLRMhQHx6brqGBkIA+fjUM3wUW8ZoWpPFAeKrO2Nf4uZDeBjjzNDNxSRvLQH4b3S9Ku4JJQ=="
       },
+      "iecode-ffi-dotnet": {
+        "type": "Project",
+        "dependencies": {
+          "IECODE.Core": "[1.0.0, )",
+          "Microsoft.JavaScript.NodeApi": "[0.9.29-gef9453cdcf, )",
+          "Microsoft.JavaScript.NodeApi.DotNetHost": "[0.9.29-gef9453cdcf, )"
+        }
+      },
       "iecode.core": {
         "type": "Project",
         "dependencies": {
@@ -169,6 +177,18 @@
         "requested": "[1.3.8, )",
         "resolved": "1.3.8",
         "contentHash": "LhwlPa7c1zs1OV2XadMtAWdImjLIsqFJPoRcIWAadSRn0Ri1DepK65UbWLPmt4riLqx2d40xjXRk0ogpqNtK7g=="
+      },
+      "Microsoft.JavaScript.NodeApi": {
+        "type": "CentralTransitive",
+        "requested": "[0.9.29-gef9453cdcf, )",
+        "resolved": "0.9.29-gef9453cdcf",
+        "contentHash": "BULJXcpZt/vtvDKiAIgb64kuvbm4hKvu4ACMsFn4ywFP4eppTqqKx+He9IfTJFA9ot90GF68yo7WTFZ5uTGQqA=="
+      },
+      "Microsoft.JavaScript.NodeApi.DotNetHost": {
+        "type": "CentralTransitive",
+        "requested": "[0.9.29-gef9453cdcf, )",
+        "resolved": "0.9.29-gef9453cdcf",
+        "contentHash": "lnw/klWmq1c8viF5tBXio748poiuyAwWbMU/aYTq1hQf4AxY6skI4OmLA/Au3JuupqAWFRAqdG2gepoFQHBwWA=="
       },
       "MoonSharp": {
         "type": "CentralTransitive",

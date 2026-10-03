@@ -121,7 +121,8 @@ public class TEX : NdsBlock
                 TextureFormat.Color256 => pixelReader.ReadPixels<Indexed8>(textureInfo.Width, textureInfo.Height),
                 TextureFormat.A3I5 => pixelReader.ReadPixels<A3I5>(textureInfo.Width, textureInfo.Height),
                 TextureFormat.A5I3 => pixelReader.ReadPixels<A5I3>(textureInfo.Width, textureInfo.Height),
-                TextureFormat.A1BGR5 => pixelReader.ReadPixels<A1BGR555>(textureInfo.Width, textureInfo.Height)
+                TextureFormat.A1BGR5 => pixelReader.ReadPixels<A1BGR555>(textureInfo.Width, textureInfo.Height),
+                _ => throw new InvalidDataException($"Unsupported texture format: {textureInfo.Format}.")
             };
 
             var meta = new ImageMetaData(textureInfo.Width, textureInfo.Height, textureInfo.Format,

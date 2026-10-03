@@ -169,7 +169,7 @@ public sealed class AsyncCpkReader : IAsyncCpkReader
                         {
                             fixed (byte* dataPtr = data.RawArray)
                             {
-                                var decompressed = CriLayla.DecompressToArrayPool(dataPtr);
+                                var decompressed = CriLayla.DecompressToArrayPool(data.Span);
                                 decompressedData = decompressed.Span.ToArray();
                                 decompressedCount = decompressed.Count;
                                 decompressed.Dispose();
@@ -229,7 +229,7 @@ public sealed class AsyncCpkReader : IAsyncCpkReader
                         {
                             fixed (byte* dataPtr = data.RawArray)
                             {
-                                var decompressed = CriLayla.DecompressToArrayPool(dataPtr);
+                                var decompressed = CriLayla.DecompressToArrayPool(data.Span);
                                 return new ArrayRentalMemoryOwner(decompressed);
                             }
                         }
@@ -396,7 +396,7 @@ public sealed class AsyncCpkReader : IAsyncCpkReader
             fixed (byte* dataPtr = data.RawArray)
             {
                 _decrypt?.Invoke(file, dataPtr, data.Count);
-                needsDecompression = CriLayla.IsCompressed(dataPtr, out _);
+                needsDecompression = CriLayla.IsCompressed(data.Span, out _);
             }
 
             return data;

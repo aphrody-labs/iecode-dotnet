@@ -17,7 +17,7 @@ public static class NodeApiBridge
     public const string NuGetPackage = "Microsoft.JavaScript.NodeApi";
     public const string NativeContract = "iecode.ffi/v1";
 
-    public static string GetVersion() => "2.0.4-dotnet10";
+    public static string GetVersion() => Native.IecodeNative.RuntimeVersion;
     public static string GetSchema() => NativeContract;
     public static int GetStatus() => 1;
 
@@ -34,29 +34,14 @@ public static class NodeApiBridge
         if (data.Length < 16) return false;
         fixed (byte* p = data)
         {
-            return CriLayla.IsCompressed(p, out _);
+            return CriLayla.IsCompressed(data, out _);
         }
     }
 
-    public static unsafe byte[]? DecompressCrilayla(byte[] data)
+    public static byte[]? DecompressCrilayla(byte[] data)
     {
-        if (data.Length < 16) return null;
-        fixed (byte* p = data)
-        {
-            if (!CriLayla.IsCompressed(p, out int uncompressedSize))
-                return null;
-
-            int uncompSizeOfCompData = *(int*)(p + 8);
-            int uncompHeaderOffset = *(int*)(p + 12);
-            int total = uncompSizeOfCompData + CriLayla.UncompressedDataSize;
-
-            var outArr = new byte[total];
-            fixed (byte* outPtr = outArr)
-            {
-                CriLayla.Decompress(p, outPtr, uncompSizeOfCompData, uncompHeaderOffset);
-            }
-            return outArr;
-        }
+        try { return CriLayla.DecompressToArray(data); }
+        catch (InvalidDataException) { return null; }
     }
 
     public static byte[] DecryptCpkBlock(byte[] data, ulong offset, uint key = NativeCrypto.IEVRCriKey)

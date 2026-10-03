@@ -1,4 +1,4 @@
-using System.Buffers.Binary;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using IECODE.Core.Formats;
@@ -15,19 +15,31 @@ namespace IECODE.Ffi.Native;
 /// </summary>
 public static unsafe class IecodeNative
 {
-    private static readonly byte[] VersionBytes = "2.0.4-dotnet10\0"u8.ToArray();
-    private static readonly byte[] SchemaBytes = "iecode.ffi/v1\0"u8.ToArray();
+    internal static string RuntimeVersion { get; } = typeof(IecodeNative).Assembly
+        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion.Split('+')[0]
+        ?? typeof(IecodeNative).Assembly.GetName().Version?.ToString()
+        ?? throw new InvalidOperationException("Missing FFI assembly version metadata.");
+    private static readonly byte* VersionBytes = AllocateString(RuntimeVersion);
+    private static readonly byte* SchemaBytes = AllocateString("iecode.ffi/v1");
+
+    private static byte* AllocateString(string value)
+    {
+        byte[] bytes = Encoding.UTF8.GetBytes(value + "\0");
+        byte* pointer = (byte*)NativeMemory.Alloc((nuint)bytes.Length);
+        bytes.CopyTo(new Span<byte>(pointer, bytes.Length));
+        return pointer;
+    }
 
     [UnmanagedCallersOnly(EntryPoint = "iecode_core_version")]
     public static byte* CoreVersion()
     {
-        fixed (byte* p = VersionBytes) return p;
+        return VersionBytes;
     }
 
     [UnmanagedCallersOnly(EntryPoint = "iecode_ffi_schema")]
     public static byte* Schema()
     {
-        fixed (byte* p = SchemaBytes) return p;
+        return SchemaBytes;
     }
 
     [UnmanagedCallersOnly(EntryPoint = "iecode_status")]
@@ -60,32 +72,26 @@ public static unsafe class IecodeNative
     [UnmanagedCallersOnly(EntryPoint = "iecode_crilayla_decompress")]
     public static int CrilaylaDecompress(byte* input, int inputLen, byte** output, int* outputLen)
     {
+        if (output != null) *output = null;
+        if (outputLen != null) *outputLen = 0;
         if (input == null || output == null || outputLen == null || inputLen < 16)
             return -1;
-
-        if (!CriLayla.IsCompressed(input, out int compressedDataSize))
+        if (!new ReadOnlySpan<byte>(input, 8).SequenceEqual("CRILAYLA"u8))
             return -2;
-
-        int uncompSizeOfCompData = *(int*)(input + 8);
-        int uncompHeaderOffset = *(int*)(input + 12);
-        int totalUncompressed = uncompSizeOfCompData + CriLayla.UncompressedDataSize;
-
-        byte* outBuf = (byte*)NativeMemory.Alloc((nuint)totalUncompressed);
-        if (outBuf == null)
-            return -3;
-
+        byte* outBuf = null;
         try
         {
-            CriLayla.Decompress(input, outBuf, uncompSizeOfCompData, uncompHeaderOffset);
+            byte[] decoded = CriLayla.DecompressToArray(new ReadOnlySpan<byte>(input, inputLen));
+            outBuf = (byte*)NativeMemory.Alloc((nuint)decoded.Length);
+            if (outBuf == null) return -3;
+            decoded.CopyTo(new Span<byte>(outBuf, decoded.Length));
             *output = outBuf;
-            *outputLen = totalUncompressed;
+            *outputLen = decoded.Length;
             return 0;
         }
         catch
         {
             NativeMemory.Free(outBuf);
-            *output = null;
-            *outputLen = 0;
             return -4;
         }
     }
@@ -93,9 +99,13 @@ public static unsafe class IecodeNative
     [UnmanagedCallersOnly(EntryPoint = "iecode_crilayla_compress")]
     public static int CrilaylaCompress(byte* input, int inputLen, byte** output, int* outputLen)
     {
-        if (input == null || output == null || outputLen == null || inputLen < 0)
+        if (output != null) *output = null;
+        if (outputLen != null) *outputLen = 0;
+        if (input == null || output == null || outputLen == null || inputLen < 0 ||
+            inputLen > CriLayla.MaximumOutputSize)
             return -1;
 
+        byte* outBuf = null;
         try
         {
             // CRILAYLA compressed format:
@@ -128,7 +138,7 @@ public static unsafe class IecodeNative
             int headerOffset = bitstream.Length;
             int totalCompressedSize = 16 + headerOffset + CriLayla.UncompressedDataSize;
 
-            byte* outBuf = (byte*)NativeMemory.Alloc((nuint)totalCompressedSize);
+            outBuf = (byte*)NativeMemory.Alloc((nuint)totalCompressedSize);
             if (outBuf == null)
                 return -2;
 
@@ -162,6 +172,7 @@ public static unsafe class IecodeNative
         }
         catch
         {
+            NativeMemory.Free(outBuf);
             *output = null;
             *outputLen = 0;
             return -3;

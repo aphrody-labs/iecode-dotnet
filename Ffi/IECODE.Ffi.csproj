@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NativeLib Condition="'$(PublishAot)' == 'true'">Shared</NativeLib>
     <IsPackable>true</IsPackable>
     <PackageId>iecode-ffi-dotnet</PackageId>
     <Description>.NET 10 adapter for the IECODE native FFI and Node API hosts.</Description>

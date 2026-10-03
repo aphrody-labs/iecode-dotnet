@@ -143,7 +143,7 @@ public class BatchFileExtractor<T> : IDisposable, IBatchFileExtractor<T> where T
         try
         {
             fixed (byte* dataPtr = data.RawArray)
-                _writeItems.Enqueue(new FilePipelineItem(fullPath, CriLayla.DecompressToArrayPool(dataPtr)));
+                _writeItems.Enqueue(new FilePipelineItem(fullPath, CriLayla.DecompressToArrayPool(data.Span)));
         }
         finally
         {

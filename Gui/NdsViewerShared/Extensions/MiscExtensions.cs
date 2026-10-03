@@ -66,7 +66,7 @@ public static class MiscExtensions
     {
         var list = enumerable.ToList();
         var joiner = includeAnd ? list.Count == 2 ? " and " : ", and " : ", ";
-        return list.Count > 1 ? string.Join(", ", list.Take(list.Count - 1)) + joiner + list.Last() : list.First().ToString();
+        return list.Count > 1 ? string.Join(", ", list.Take(list.Count - 1)) + joiner + list.Last() : list.FirstOrDefault()?.ToString() ?? string.Empty;
     }
 
     public static byte[] ReadToEnd(this Stream str)

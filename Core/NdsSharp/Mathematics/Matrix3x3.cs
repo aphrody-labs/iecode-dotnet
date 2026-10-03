@@ -75,7 +75,8 @@ public struct Matrix3x3(
             8 => new Matrix3x3(
                 a, b, 0,
                 c, d, 0,
-                0, 0, o)
+                0, 0, o),
+            _ => throw new ArgumentOutOfRangeException(nameof(matrixSelection), matrixSelection, "Pivot selection must be between 0 and 8.")
         };
     }
 

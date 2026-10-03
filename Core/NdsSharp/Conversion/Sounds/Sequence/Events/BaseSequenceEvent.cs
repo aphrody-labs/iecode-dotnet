@@ -43,7 +43,8 @@ public class BaseSequenceEvent : BaseDeserializable
                     ? reader.ReadVariableLength()
                     : (parameter.ThreeByteInteger
                         ? reader.Read<byte>() | (reader.Read<byte>() << 8) | (reader.Read<byte>() << 16)
-                        : reader.Read<int>())
+                        : reader.Read<int>()),
+                _ => throw new NotSupportedException($"Unsupported sequence parameter type: {readName}.")
             };
 
             if (field.FieldType.IsEnum)

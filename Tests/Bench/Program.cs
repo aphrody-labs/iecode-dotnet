@@ -78,7 +78,7 @@ internal static class Program
         {
             for (int i = 0; i < Warmup; i++)
             {
-                outLen = CriLayla.DecompressToArray(p).Length;
+                outLen = CriLayla.DecompressToArray(data).Length;
             }
 
             var times = new List<double>(Runs);
@@ -87,7 +87,7 @@ internal static class Program
                 long t = Stopwatch.GetTimestamp();
                 for (int k = 0; k < iters; k++)
                 {
-                    outLen = CriLayla.DecompressToArray(p).Length;
+                    outLen = CriLayla.DecompressToArray(data).Length;
                 }
                 times.Add(Stopwatch.GetElapsedTime(t).TotalSeconds);
             }

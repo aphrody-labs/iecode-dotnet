@@ -26,7 +26,8 @@ public class Material : IDisposable
         IsTransparent = Alpha != 1 || (material.Texture?.Pixels.Any(pixel => pixel switch
         {
             ColoredPixel coloredPixel => coloredPixel.Color.A != byte.MaxValue,
-            IndexedPixel indexedPixel => indexedPixel.Alpha != byte.MaxValue
+            IndexedPixel indexedPixel => indexedPixel.Alpha != byte.MaxValue,
+            _ => throw new NotSupportedException("Unsupported texture pixel representation.")
         }) ?? false);
     }
 

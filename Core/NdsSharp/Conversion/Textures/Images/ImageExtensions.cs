@@ -20,7 +20,8 @@ public static class ImageExtensions
         return image switch
         {
             IndexedPaletteImage indexedPaletteImage => indexedPaletteImage.ToImage(),
-            ColoredImage coloredImage => coloredImage.ToImage()
+            ColoredImage coloredImage => coloredImage.ToImage(),
+            _ => throw new NotSupportedException("Unsupported image representation.")
         };
     }
 

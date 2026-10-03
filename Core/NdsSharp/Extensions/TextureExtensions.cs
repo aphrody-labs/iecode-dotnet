@@ -16,7 +16,8 @@ public static class TextureExtensions
             TextureFormat.Color256 => 8,
             TextureFormat.Texel => 2,
             TextureFormat.A5I3 => 8,
-            TextureFormat.A1BGR5 => 16
+            TextureFormat.A1BGR5 => 16,
+            _ => throw new InvalidDataException($"Unknown texture format: {format}.")
         };
     }
 
@@ -31,7 +32,8 @@ public static class TextureExtensions
             TextureFormat.Color256 => 512,
             TextureFormat.Texel => 512,
             TextureFormat.A5I3 => 16,
-            TextureFormat.A1BGR5 => 0
+            TextureFormat.A1BGR5 => 0,
+            _ => throw new InvalidDataException($"Unknown texture format: {format}.")
         };
     }
 

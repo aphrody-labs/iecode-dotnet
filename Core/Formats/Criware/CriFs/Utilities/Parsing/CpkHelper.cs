@@ -43,7 +43,7 @@ public static class CpkHelper
         fixed (byte* dataPtr = rawData.RawArray)
         {
             decrypt?.Invoke(file, dataPtr, rawData.Count);
-            needsDecompression = CriLayla.IsCompressed(dataPtr, out compressedDataSize);
+            needsDecompression = CriLayla.IsCompressed(rawData.Span, out compressedDataSize);
             if (!needsDecompression)
                 return rawData;
 
@@ -91,7 +91,7 @@ public static class CpkHelper
 
         fixed (byte* dataPtr = rawData.RawArray)
         {
-            var result = CriLayla.DecompressToArrayPool(dataPtr);
+            var result = CriLayla.DecompressToArrayPool(rawData.Span);
             rawData.Dispose();
             return result;
         }

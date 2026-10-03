@@ -57,7 +57,8 @@ public class SectionProcessor(MDLModel Model)
                         0 => (-1, -1),
                         1 => (command.Parameters[3], -1),
                         2 => (-1, command.Parameters[3]),
-                        3 => (command.Parameters[3], command.Parameters[4])
+                        3 => (command.Parameters[3], command.Parameters[4]),
+                        _ => throw new InvalidDataException($"Invalid matrix command flags: {command.Flags}.")
                     };
 
                     if (loadIndex != -1)

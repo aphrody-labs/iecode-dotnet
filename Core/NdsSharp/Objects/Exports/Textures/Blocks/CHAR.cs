@@ -45,7 +45,9 @@ public class CHAR : NdsBlock
         var dataOffset = reader.Read<uint>();
         reader.Position = (int)dataOffset + HEADER_SIZE;
 
-        var pixelCount = (int)(dataLength * 8 / TextureFormat.BitsPerPixel());
+        int bitsPerPixel = TextureFormat.BitsPerPixel();
+        if (bitsPerPixel == 0) throw new InvalidDataException("Character texture format has no pixel data.");
+        var pixelCount = checked((int)((long)dataLength * 8 / bitsPerPixel));
         Pixels = TextureFormat switch
         {
             TextureFormat.Color4 => reader.ReadPixels<Indexed2>(pixelCount),
@@ -53,7 +55,8 @@ public class CHAR : NdsBlock
             TextureFormat.Color256 => reader.ReadPixels<Indexed8>(pixelCount),
             TextureFormat.A3I5 => reader.ReadPixels<A3I5>(pixelCount),
             TextureFormat.A5I3 => reader.ReadPixels<A5I3>(pixelCount),
-            TextureFormat.A1BGR5 => reader.ReadPixels<A1BGR555>(pixelCount)
+            TextureFormat.A1BGR5 => reader.ReadPixels<A1BGR555>(pixelCount),
+            _ => throw new InvalidDataException($"Unsupported character texture format: {TextureFormat}.")
         };
 
 

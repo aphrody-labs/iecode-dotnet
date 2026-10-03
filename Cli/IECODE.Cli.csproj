@@ -11,7 +11,6 @@
     <!-- Assembly Info -->
     <AssemblyName>IECODE.Cli</AssemblyName>
     <RootNamespace>IECODE.CLI</RootNamespace>
-    <Version>2.0.0</Version>
     <Authors>IECODE Team</Authors>
     <Description>CLI for IECODE - Inazuma Eleven Victory Road reverse engineering toolkit</Description>
     <Copyright>MIT License</Copyright>

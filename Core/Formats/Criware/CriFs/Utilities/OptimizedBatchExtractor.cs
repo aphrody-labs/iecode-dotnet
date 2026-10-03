@@ -266,7 +266,7 @@ public sealed class OptimizedBatchExtractor : IAsyncDisposable, IDisposable
                 {
                     fixed (byte* dataPtr = job.CompressedData.RawArray)
                     {
-                        decompressed = CriLayla.DecompressToArrayPool(dataPtr);
+                        decompressed = CriLayla.DecompressToArrayPool(job.CompressedData.Span);
                     }
                 }
 

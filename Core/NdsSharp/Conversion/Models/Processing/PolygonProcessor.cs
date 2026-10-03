@@ -52,9 +52,13 @@ public class PolygonProcessor(MDLPolygon Polygon, MeshProcessingUnit ProcessingU
                 CurrentNormal = Vector3.Normalize(Vector3.TransformNormal(PolygonCommands.NORMAL(command), ProcessingUnit.CurrentMatrix));
                 break;
             case PolygonCommandOpCode.TEXCOORD:
+                var material = ProcessingUnit.CurrentMaterial
+                    ?? throw new InvalidDataException("Texture coordinates require a bound material.");
+                if (material.Width <= 0 || material.Height <= 0)
+                    throw new InvalidDataException("Texture dimensions must be positive.");
                 CurrentTexCoord = PolygonCommands.TEXCOORD(command);
-                CurrentTexCoord.X = CurrentTexCoord.X / ProcessingUnit.CurrentMaterial.Width;
-                CurrentTexCoord.Y = -CurrentTexCoord.Y / ProcessingUnit.CurrentMaterial.Height;
+                CurrentTexCoord.X = CurrentTexCoord.X / material.Width;
+                CurrentTexCoord.Y = -CurrentTexCoord.Y / material.Height;
                 break;
             case PolygonCommandOpCode.VTX_16:
                 CurrentVertex = PolygonCommands.VTX_16(command);

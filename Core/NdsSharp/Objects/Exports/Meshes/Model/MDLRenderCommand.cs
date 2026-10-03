@@ -28,6 +28,7 @@ public class MDLRenderCommand : BaseDeserializable
                 1 => 4,
                 2 => 4,
                 3 => 5,
+                _ => throw new InvalidDataException($"Invalid render command flags: {Flags}."),
             },
             0x07 => 1,
             0x08 => 1,
@@ -47,7 +48,8 @@ public class MDLRenderCommand : BaseDeserializable
             0x46 => 4,
             0x47 => 2,
             0x66 => 5,
-            0x80 => 0
+            0x80 => 0,
+            _ => throw new InvalidDataException($"Unknown render command: {OpCode}.")
         };
 
         Parameters = reader.ReadArray<byte>(parameterCount);

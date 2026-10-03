@@ -58,12 +58,12 @@ public class BW2TerrainTile : BaseDeserializable
         reader.Position += sizeof(uint);
     }
 
-    public override bool Equals(object? obj)
-    {
-        var other = (BW2TerrainTile)obj;
-        return HeightType == other.HeightType && Slope == other.Slope && Height == other.Height && X == other.X &&
-               Y == other.Y;
-    }
+    public override bool Equals(object? obj) => obj is BW2TerrainTile other &&
+        HeightType == other.HeightType && Slope == other.Slope && Height == other.Height &&
+        X == other.X && Y == other.Y;
+
+    public override int GetHashCode() => HashCode.Combine(HeightType, Slope, Height, X, Y);
+
 }
 
 public class BW2TerrainCorner : BaseDeserializable

@@ -41,7 +41,7 @@ public class EnumToStringConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         var enumValue = value as Enum;
-        return enumValue.GetDescription();
+        return enumValue is null ? AvaloniaProperty.UnsetValue : enumValue.GetDescription();
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -63,13 +63,14 @@ public class EnumToRecordConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         var enumValue = value as Enum;
-        return new EnumRecord(enumValue.GetType(), enumValue, enumValue.GetDescription(), enumValue.IsDisabled());
+        return enumValue is null ? AvaloniaProperty.UnsetValue
+            : new EnumRecord(enumValue.GetType(), enumValue, enumValue.GetDescription(), enumValue.IsDisabled());
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         var enumValue = value as EnumRecord;
-        return enumValue.Value;
+        return enumValue is null ? AvaloniaProperty.UnsetValue : enumValue.Value;
     }
 }
 
@@ -80,7 +81,8 @@ public class EnumHasFlagConverter : IValueConverter
         var enumValue = value as Enum;
         var compareValue = parameter as Enum;
 
-        return enumValue.HasFlag(compareValue);
+        return enumValue is null || compareValue is null || enumValue.GetType() != compareValue.GetType()
+            ? AvaloniaProperty.UnsetValue : enumValue.HasFlag(compareValue);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -96,7 +98,7 @@ public class EnumEqualsConverter : IValueConverter
         var enumValue = value as Enum;
         var compareValue = parameter as Enum;
 
-        return enumValue.Equals(compareValue);
+        return enumValue is null ? AvaloniaProperty.UnsetValue : enumValue.Equals(compareValue);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

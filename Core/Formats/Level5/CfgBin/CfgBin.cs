@@ -288,17 +288,6 @@ namespace IECODE.Core.Formats.Level5.CfgBin
             using (var doc = JsonDocument.Parse(jsonContent))
             {
                 var root = doc.RootElement;
-                Console.WriteLine($"[DEBUG] JSON Root Kind: {root.ValueKind}");
-
-                if (root.ValueKind == JsonValueKind.Object)
-                {
-                    Console.WriteLine("[DEBUG] Root properties:");
-                    foreach (var prop in root.EnumerateObject())
-                    {
-                        Console.WriteLine($"  - {prop.Name} ({prop.Value.ValueKind})");
-                    }
-                }
-
                 if (root.TryGetProperty("Encoding", out var encodingElement) || root.TryGetProperty("encoding", out encodingElement))
                 {
                     string? encodingName = encodingElement.GetString();
@@ -310,7 +299,6 @@ namespace IECODE.Core.Formats.Level5.CfgBin
 
                 if (root.TryGetProperty("Entries", out var entriesElement) || root.TryGetProperty("entries", out entriesElement))
                 {
-                    Console.WriteLine($"[DEBUG] Found entries array with {entriesElement.GetArrayLength()} elements");
                     foreach (var entryElement in entriesElement.EnumerateArray())
                     {
                         Entries.Add(ParseEntryFromJson(entryElement));
@@ -318,19 +306,16 @@ namespace IECODE.Core.Formats.Level5.CfgBin
                 }
                 else if (root.TryGetProperty("lists", out var listsElement) && listsElement.ValueKind == JsonValueKind.Array)
                 {
-                    Console.WriteLine($"[DEBUG] Found 'lists' array with {listsElement.GetArrayLength()} elements");
                     foreach (var listElement in listsElement.EnumerateArray())
                     {
                         string listName = "";
                         if (listElement.TryGetProperty("name", out var nameProp))
                         {
                             listName = nameProp.GetString() ?? "";
-                            Console.WriteLine($"[DEBUG] List Name: {listName}");
                         }
 
                         if (listElement.TryGetProperty("values", out var listValues) && listValues.ValueKind == JsonValueKind.Array)
                         {
-                            Console.WriteLine($"[DEBUG] Found list with {listValues.GetArrayLength()} values");
                             int valIdx = 0;
                             foreach (var entryElement in listValues.EnumerateArray())
                             {
@@ -345,31 +330,15 @@ namespace IECODE.Core.Formats.Level5.CfgBin
                         }
                     }
                 }
-                else
-                {
-                    Console.WriteLine("[DEBUG] Could not find 'Entries', 'entries', or 'lists' property in JSON root");
-                }
             }
         }
 
-        private static int _debugEntryCount = 0;
         private Entry ParseEntryFromJson(JsonElement element)
         {
             var entry = new Entry
             {
                 Encoding = Encoding
             };
-
-            // Debug: print properties of the entry element
-            if (_debugEntryCount < 5)
-            {
-                Console.WriteLine($"[DEBUG] Entry {_debugEntryCount} properties:");
-                foreach (var prop in element.EnumerateObject())
-                {
-                    Console.WriteLine($"  - {prop.Name} ({prop.Value.ValueKind})");
-                }
-                _debugEntryCount++;
-            }
 
             if (element.TryGetProperty("Name", out var nameElement) || element.TryGetProperty("name", out nameElement))
                 entry.Name = nameElement.GetString() ?? string.Empty;
@@ -483,7 +452,7 @@ namespace IECODE.Core.Formats.Level5.CfgBin
                     case VariableType.Int:
                         if (valueElement.ValueKind == JsonValueKind.String)
                         {
-                            if (int.TryParse(valueElement.GetString(), out int intVal))
+                            if (int.TryParse(valueElement.GetString(), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int intVal))
                                 variable.Value = intVal;
                             else
                                 variable.Value = 0;
@@ -496,7 +465,7 @@ namespace IECODE.Core.Formats.Level5.CfgBin
                     case VariableType.Float:
                         if (valueElement.ValueKind == JsonValueKind.String)
                         {
-                            if (float.TryParse(valueElement.GetString(), out float floatVal))
+                            if (float.TryParse(valueElement.GetString(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float floatVal))
                                 variable.Value = floatVal;
                             else
                                 variable.Value = 0.0f;

@@ -20,20 +20,14 @@ public class GameDataMapper
         var cfgBin = LoadCfgBin(relativePath, filePattern);
         if (cfgBin == null)
         {
-            Console.WriteLine($"[DEBUG] CfgBin is null for {relativePath}");
-            return new List<T>();
-        }
 
-        Console.WriteLine($"[DEBUG] Loaded CfgBin with {cfgBin.Entries.Count} root entries");
-        foreach (var entry in cfgBin.Entries)
-        {
-            Console.WriteLine($"  - Root Entry: {entry.Name}");
+            return new List<T>();
         }
 
         var results = new List<T>();
         var entries = FindEntriesByPrefix(cfgBin, entryPrefix);
 
-        Console.WriteLine($"[DEBUG] Found {entries.Count} entries with prefix {entryPrefix}");
+
 
         foreach (var entry in entries)
         {
@@ -95,6 +89,22 @@ public class GameDataMapper
 
     private CfgBin? LoadCfgBin(string relativePath, string? filePattern = null)
     {
+        using var game = new IEVRGame(_dumpPath);
+        if (File.Exists(game.CpkListPath))
+        {
+            using var vfs = new IECODE.Core.Native.NativeGameVfs(_dumpPath);
+            string directory = relativePath.Replace('\\', '/').Trim('/');
+            string alternate = directory.StartsWith("data/", StringComparison.Ordinal) ? directory[5..] : directory;
+            string[] files = vfs.Entries().Select(e => e.GetProperty("path").GetString() ?? "")
+                .Where(path => (Path.GetDirectoryName(path)?.Replace('\\', '/') == directory || Path.GetDirectoryName(path)?.Replace('\\', '/') == alternate)
+                    && System.IO.Enumeration.FileSystemName.MatchesSimpleExpression(filePattern ?? "*.cfg.bin", Path.GetFileName(path), true)).ToArray();
+            string? selected = SelectVersionedFile(files, filePattern) ?? files.Order(StringComparer.Ordinal).FirstOrDefault();
+            if (selected is null) throw new FileNotFoundException($"No virtual cfg.bin matches {relativePath}/{filePattern}.");
+            var config = new CfgBin();
+            config.ImportJsonString(vfs.Decode(vfs.Read(selected), typedConfig: true));
+            return config;
+        }
+
         // Normalise les séparateurs Windows (« \ ») des chemins relatifs codés en dur
         // (ex. « data\common\gamedata\character ») pour rester portable hors Windows.
         relativePath = relativePath.Replace('\\', Path.DirectorySeparatorChar);

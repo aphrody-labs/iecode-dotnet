@@ -39,75 +39,21 @@ public static class AnalyzeCommand
             // Analyze CPK contents
             Console.WriteLine("📦 CPK Analysis:");
 
-            var cpkFiles = game.Cpk.GetAllCpkFiles().Take(deep ? 1000 : 10).ToList();
+            using var vfs = new IECODE.Core.Native.NativeGameVfs(game.GamePath);
             int totalFiles = 0;
             var extensions = new Dictionary<string, int>();
-
-            foreach (var cpk in cpkFiles)
+            foreach (var entry in (deep ? vfs.Entries() : vfs.Entries().Take(10000)))
             {
-                try
-                {
-                    var files = game.Cpk.GetFilesInCpk(cpk);
-                    totalFiles += files.Length;
-
-                    foreach (var file in files)
-                    {
-                        string ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-                        if (string.IsNullOrEmpty(ext)) ext = "(no ext)";
-
-                        if (extensions.TryGetValue(ext, out int count))
-                        {
-                            extensions[ext] = count + 1;
-                        }
-                        else
-                        {
-                            extensions[ext] = 1;
-                        }
-                    }
-
-                    if (verbose)
-                    {
-                        Console.WriteLine($"   {Path.GetFileName(cpk)}: {files.Length} files");
-                    }
-                }
-                catch
-                {
-                    // Skip problematic CPKs
-                }
+                string path = entry.GetProperty("path").GetString() ?? "";
+                string extension = Path.GetExtension(path).ToLowerInvariant();
+                if (extension.Length == 0) extension = "(no ext)";
+                extensions[extension] = extensions.GetValueOrDefault(extension) + 1;
+                totalFiles++;
             }
-
-            Console.WriteLine($"   Analyzed {cpkFiles.Count} CPKs, {totalFiles} files");
-            Console.WriteLine();
-
-            Console.WriteLine("📊 File Types:");
-            foreach (var ext in extensions.OrderByDescending(e => e.Value).Take(15))
-            {
-                Console.WriteLine($"   {ext.Key,-15} : {ext.Value,6} files");
-            }
-            Console.WriteLine();
-
-            // Read cpk_list if available
-            if (info.HasCpkList)
-            {
-                Console.WriteLine("📋 CPK List (cpk_list.cfg.bin):");
-                try
-                {
-                    var cpkList = game.CfgBin.ReadCpkList();
-                    var looseFiles = cpkList.Files.Where(f => f.IsLoose).ToList();
-                    var packFiles = cpkList.Files.Where(f => !f.IsLoose).ToList();
-                    var uniqueCpks = packFiles.Select(f => f.CpkName).Distinct().ToList();
-
-                    Console.WriteLine($"   Total entries: {cpkList.Files.Count}");
-                    Console.WriteLine($"   Loose files: {looseFiles.Count}");
-                    Console.WriteLine($"   Packed files: {packFiles.Count}");
-                    Console.WriteLine($"   Unique CPKs: {uniqueCpks.Count}");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"   Error reading: {ex.Message}");
-                }
-            }
-            Console.WriteLine();
+            Console.WriteLine($"   Indexed virtual files: {vfs.Count}");
+            Console.WriteLine($"   Analyzed virtual entries: {totalFiles}" + (deep ? " (all)" : " (limit 10000; use --deep for all)"));
+            foreach (var extension in extensions.OrderByDescending(e => e.Value).Take(15))
+                Console.WriteLine($"   {extension.Key,-15} : {extension.Value,6} files");
 
             // Save JSON report
             if (!string.IsNullOrEmpty(output))
@@ -115,7 +61,7 @@ public static class AnalyzeCommand
                 var report = new GameAnalysisReport
                 {
                     GamePath = info.GamePath,
-                    PacksPath = info.GamePath,
+                    PacksPath = game.PacksPath,
                     CpkCount = info.CpkCount,
                     TotalCpkSize = info.TotalCpkSize,
                     AnalyzedAt = DateTime.UtcNow,

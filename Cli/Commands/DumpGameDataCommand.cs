@@ -7,7 +7,7 @@ namespace IECODE.Cli.Commands;
 
 public static class DumpGameDataCommand
 {
-    public static Command Create()
+    public static Command Create(Option<string?> gamePathOption)
     {
         var command = new Command("dump-gamedata", "Dump specific game data types to JSON using typed models");
 
@@ -16,7 +16,7 @@ public static class DumpGameDataCommand
 
         var dumpOption = new Option<string?>(
             aliases: ["--dump", "-d"],
-            description: "Path to dump folder (auto-detects NIE_GAME_DIR or current directory)");
+            description: "Installed game path; extracted directories remain supported");
         command.AddOption(dumpOption);
 
         var langOption = new Option<string>(
@@ -30,7 +30,7 @@ public static class DumpGameDataCommand
             description: "Output JSON file path or directory (default: stdout)");
         command.AddOption(outputOption);
 
-        command.SetHandler(Execute, typeArg, dumpOption, langOption, outputOption);
+        command.SetHandler((string value, string? source, string language, string? output, string? game) => Execute(value, source ?? game, language, output), typeArg, dumpOption, langOption, outputOption, gamePathOption);
 
         return command;
     }
@@ -44,7 +44,7 @@ public static class DumpGameDataCommand
 
             if (type.ToLower() == "all")
             {
-                DumpAll(mapper, language, outputPath);
+                DumpAll(basePath, language, outputPath);
                 return;
             }
 
@@ -100,6 +100,7 @@ public static class DumpGameDataCommand
                     json = JsonSerializer.Serialize(paramsData, AppJsonContext.Default.ListCharacterParam);
                     break;
                 default:
+                    Environment.ExitCode = 1;
                     Console.Error.WriteLine($"Unknown type: {type}. Supported: character, item, skill, subtitle, noun, param, all");
                     return;
             }
@@ -117,10 +118,11 @@ public static class DumpGameDataCommand
         catch (Exception ex)
         {
             Console.Error.WriteLine($"Error: {ex.Message}");
+            Environment.ExitCode = 1;
         }
     }
 
-    private static void DumpAll(GameDataMapper mapper, string language, string? outputDir)
+    private static void DumpAll(string source, string language, string? outputDir)
     {
         string targetDir = outputDir ?? Path.Combine(Directory.GetCurrentDirectory(), "gamedata_export");
         Directory.CreateDirectory(targetDir);
@@ -129,28 +131,12 @@ public static class DumpGameDataCommand
         foreach (var type in types)
         {
             string fileName = Path.Combine(targetDir, $"{type}_{language}.json");
-            Execute(type, null, language, fileName);
+            Execute(type, source, language, fileName);
         }
 
         Console.WriteLine($"\nFull export completed to: {targetDir}");
     }
 
-    private static string ResolveDumpPath(string? userPath)
-    {
-        if (!string.IsNullOrEmpty(userPath) && Directory.Exists(userPath))
-            return userPath;
-
-        string[] defaultPaths =
-        [
-            Environment.GetEnvironmentVariable("NIE_GAME_DIR") ?? string.Empty,
-            Directory.GetCurrentDirectory(),
-        ];
-        foreach (var path in defaultPaths)
-        {
-            if (Directory.Exists(Path.Combine(path, "data")))
-                return path;
-        }
-
-        throw new DirectoryNotFoundException("Dump folder not found. Specify path with --dump option.");
-    }
+    private static string ResolveDumpPath(string? userPath) =>
+        IECODE.Core.IEVRGame.ResolveGamePath(userPath ?? IECODE.Core.IEVRGame.ResolveDefaultGamePath());
 }

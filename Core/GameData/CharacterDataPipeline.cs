@@ -37,7 +37,7 @@ public class CharacterDataPipeline
         _baseInfos = _mapper.LoadEntries<CharacterBaseInfo>(
             CharaBasePath,
             "CHARA_BASE_INFO",
-            e => new CharacterBaseInfo(e));
+            e => new CharacterBaseInfo(e), "chara_base*.cfg.bin");
 
         if (_baseInfos.Count == 0)
             throw new FileNotFoundException("No character base info found in chara_base*.cfg.bin");
@@ -48,7 +48,7 @@ public class CharacterDataPipeline
         _nounInfos = _mapper.LoadEntries<NounInfo>(
             textPath,
             "NOUN_INFO",
-            e => new NounInfo(e));
+            e => new NounInfo(e), "chara_text*.cfg.bin");
 
         if (_nounInfos.Count == 0)
             throw new FileNotFoundException($"No noun info found in chara_text.cfg.bin for language: {language}");
@@ -132,24 +132,9 @@ public class CharacterDataPipeline
         return results;
     }
 
-    private static string ResolveDumpPath(string? userPath)
-    {
-        if (!string.IsNullOrEmpty(userPath) && Directory.Exists(userPath))
-            return userPath;
+    private static string ResolveDumpPath(string? userPath) =>
+        IEVRGame.ResolveGamePath(userPath ?? IEVRGame.ResolveDefaultGamePath());
 
-        string[] candidates =
-        [
-            Environment.GetEnvironmentVariable("NIE_GAME_DIR") ?? string.Empty,
-            Directory.GetCurrentDirectory(),
-        ];
-        foreach (var path in candidates)
-        {
-            if (Directory.Exists(Path.Combine(path, "data")))
-                return path;
-        }
-
-        throw new DirectoryNotFoundException("Dump folder not found. Specify path with --dump option.");
-    }
 }
 
 public class CharacterSearchResult

@@ -32,7 +32,7 @@ public static class SearchCommand
         public List<Entry> Entries { get; set; } = new();
     }
 
-    public static Command Create()
+    public static Command Create(Option<string?> gamePathOption)
     {
         var command = new Command("search-char", "Search character data in Level-5 game data");
 
@@ -41,7 +41,7 @@ public static class SearchCommand
 
         var dumpOption = new Option<string?>(
             aliases: ["--dump", "-d"],
-            description: "Path to dump folder (auto-detects NIE_GAME_DIR or current directory)");
+            description: "Installed game path; extracted directories remain supported");
         command.AddOption(dumpOption);
 
         var langOption = new Option<string>(
@@ -55,7 +55,7 @@ public static class SearchCommand
             description: "Output as JSON");
         command.AddOption(jsonOption);
 
-        command.SetHandler(Execute, queryArg, dumpOption, langOption, jsonOption);
+        command.SetHandler((string value, string? source, string language, bool json, string? game) => Execute(value, source ?? game, language, json), queryArg, dumpOption, langOption, jsonOption, gamePathOption);
 
         return command;
     }
@@ -66,10 +66,10 @@ public static class SearchCommand
         {
             var pipeline = new CharacterDataPipeline();
 
-            Console.WriteLine($"Loading character data ({language})...");
+            if (!jsonOutput) Console.WriteLine($"Loading character data ({language})...");
             pipeline.Load(dumpPath, language);
 
-            Console.WriteLine($"Searching for \"{query}\"...");
+            if (!jsonOutput) Console.WriteLine($"Searching for \"{query}\"...");
             var results = pipeline.Search(query);
 
             if (jsonOutput)
@@ -84,12 +84,13 @@ public static class SearchCommand
         catch (FileNotFoundException ex)
         {
             Console.Error.WriteLine($"Error: {ex.Message}");
-            Console.Error.WriteLine("Make sure the dump folder contains extracted cfg.bin files.");
-            Console.Error.WriteLine("Use: iecode dump --output <dump-folder>");
+            Environment.ExitCode = 1;
+            Console.Error.WriteLine("Select the installed game with --game; no extracted dump is required.");
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"Error: {ex.Message}");
+            Environment.ExitCode = 1;
         }
     }
 

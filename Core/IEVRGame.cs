@@ -39,7 +39,8 @@ public sealed class IEVRGame : IDisposable
     /// <summary>
     /// Chemin vers le dossier data/.
     /// </summary>
-    public string DataPath => Path.Combine(GamePath, "data");
+    public string DataPath => File.Exists(Path.Combine(GamePath, "cpk_list.cfg.bin"))
+        || Directory.Exists(Path.Combine(GamePath, "packs")) ? GamePath : Path.Combine(GamePath, "data");
 
     /// <summary>
     /// Chemin vers le dossier packs/ contenant les CPK.
@@ -106,7 +107,7 @@ public sealed class IEVRGame : IDisposable
     public IEVRGame(string? gamePath = null)
     {
         // Auto-détection du chemin si non fourni
-        GamePath = gamePath ?? ResolveDefaultGamePath();
+        GamePath = ResolveGamePath(gamePath ?? ResolveDefaultGamePath());
 
         // Validate paths
         IsValid = Directory.Exists(GamePath) &&
@@ -118,6 +119,23 @@ public sealed class IEVRGame : IDisposable
         CfgBin = new Config.CfgBinService(this);
         Crypto = new Crypto.CriCryptoService(this);
         Dump = new Dump.DumpService(this);
+    }
+
+    /// <summary>Normalize an installed game root, data directory or executable path.</summary>
+    public static string ResolveGamePath(string path)
+    {
+        string root = Path.GetFullPath(path);
+        if (File.Exists(root) && Path.GetFileName(root).Equals(ExecutableName, StringComparison.OrdinalIgnoreCase))
+            return Path.GetDirectoryName(root) ?? throw new ArgumentException("Executable path has no parent directory.", nameof(path));
+        if (File.Exists(Path.Combine(root, ExecutableName))) return root;
+        string nested = Path.Combine(root, "data");
+        if (File.Exists(Path.Combine(nested, ExecutableName))) return nested;
+        if (Path.GetFileName(root).Equals("data", StringComparison.OrdinalIgnoreCase))
+        {
+            string? parent = Path.GetDirectoryName(root);
+            if (parent is not null && File.Exists(Path.Combine(parent, ExecutableName))) return parent;
+        }
+        return root;
     }
 
     /// <summary>
@@ -132,9 +150,12 @@ public sealed class IEVRGame : IDisposable
     public static string ResolveDefaultGamePath()
     {
         var env = Environment.GetEnvironmentVariable("IECODE_GAME_PATH");
+        if (string.IsNullOrWhiteSpace(env)) env = Environment.GetEnvironmentVariable("NIE_GAME_DIR");
         if (!string.IsNullOrWhiteSpace(env))
             return env;
 
+        string current = ResolveGamePath(Directory.GetCurrentDirectory());
+        if (File.Exists(Path.Combine(current, ExecutableName))) return current;
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         string[] candidates =
         [

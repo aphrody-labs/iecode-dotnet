@@ -54,8 +54,9 @@ public static class Program
         rootCommand.AddCommand(AudioCommand.Create());
         rootCommand.AddCommand(UsmCommand.Create());
         rootCommand.AddCommand(SceneCommand.Create());
-        rootCommand.AddCommand(SearchCommand.Create());
-        rootCommand.AddCommand(DumpGameDataCommand.Create());
+        rootCommand.AddCommand(VfsCommand.Create(gamePathOption));
+        rootCommand.AddCommand(SearchCommand.Create(gamePathOption));
+        rootCommand.AddCommand(DumpGameDataCommand.Create(gamePathOption));
         rootCommand.AddCommand(GenerateGameDataClassesCommand.Create());
         rootCommand.AddCommand(ConvertCommand.Create());
         rootCommand.AddCommand(FormatCommand.Create());
@@ -76,7 +77,8 @@ public static class Program
         testG4skCommand.SetHandler((string file) => TestG4sk.Run(file), fileArg);
         rootCommand.AddCommand(testG4skCommand);
 
-        return await rootCommand.InvokeAsync(args);
+        int result = await rootCommand.InvokeAsync(args);
+        return result != 0 ? result : Environment.ExitCode;
     }
 
     private static Command CreateInfoCommand(Option<string?> gamePathOption, Option<bool> verboseOption)

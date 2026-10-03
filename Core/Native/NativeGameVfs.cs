@@ -25,6 +25,8 @@ public sealed class NativeGameVfs : IDisposable
     private delegate void DecodeBytes(nint pointer, nuint length, out NativeBytes bytes);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void LastError(out NativeBytes bytes);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void ResolveGameSource([MarshalAs(UnmanagedType.LPUTF8Str)] string? hint, out NativeBytes bytes);
 
     private nint _library;
     private nint _handle;
@@ -40,12 +42,35 @@ public sealed class NativeGameVfs : IDisposable
     public string DataPath { get; }
     public ulong Count { get { EnsureOpen(); return _count(_handle); } }
 
-    public NativeGameVfs(string gamePath)
+    /// <summary>Resolve through Rust without mounting archives or contacting a remote host.</summary>
+    public static JsonElement Locate(string? hint = null)
     {
-        using var game = new IEVRGame(gamePath);
-        DataPath = game.DataPath;
-        if (!File.Exists(game.CpkListPath))
-            throw new FileNotFoundException("The installed game must contain cpk_list.cfg.bin.", game.CpkListPath);
+        nint library = NativeLibrary.Load(ResolveLibrary());
+        try
+        {
+            T Symbol<T>(string name) where T : Delegate => Marshal.GetDelegateForFunctionPointer<T>(NativeLibrary.GetExport(library, name));
+            var free = Symbol<FreeBytes>("nie_bytes_free_fields");
+            Symbol<ResolveGameSource>("nie_game_source_resolve_out")(hint, out var bytes);
+            if (bytes.Pointer == 0)
+            {
+                Symbol<LastError>("nie_last_error_out")(out var error);
+                throw new DirectoryNotFoundException(Encoding.UTF8.GetString(CopyAndFree(error, free)));
+            }
+            using var document = JsonDocument.Parse(CopyAndFree(bytes, free));
+            return document.RootElement.Clone();
+        }
+        finally { NativeLibrary.Free(library); }
+    }
+
+    public static string ResolveSource(string? hint = null) => Locate(hint).GetProperty("source").GetString()
+        ?? throw new InvalidDataException("Native discovery returned no source.");
+
+    public static bool IsRemoteSource(string source) => Uri.TryCreate(source, UriKind.Absolute, out var uri)
+        && uri.Scheme is "http" or "https" or "ssh" or "sftp";
+
+    public NativeGameVfs(string? gamePath = null)
+    {
+        DataPath = ResolveSource(gamePath);
         LibraryPath = ResolveLibrary();
         _library = NativeLibrary.Load(LibraryPath);
         try
@@ -86,7 +111,9 @@ public sealed class NativeGameVfs : IDisposable
         throw new FileNotFoundException("Install the Rust NIE native library in the executable directory or PATH, or set NIE_FFI_PATH.");
     }
 
-    private byte[] CopyAndFree(NativeBytes bytes)
+    private byte[] CopyAndFree(NativeBytes bytes) => CopyAndFree(bytes, _freeBytes);
+
+    private static byte[] CopyAndFree(NativeBytes bytes, FreeBytes freeBytes)
     {
         try
         {
@@ -97,7 +124,7 @@ public sealed class NativeGameVfs : IDisposable
             Marshal.Copy(bytes.Pointer, result, 0, result.Length);
             return result;
         }
-        finally { if (bytes.Pointer != 0) _freeBytes(bytes.Pointer, bytes.Length, bytes.Capacity); }
+        finally { if (bytes.Pointer != 0) freeBytes(bytes.Pointer, bytes.Length, bytes.Capacity); }
     }
 
     private string Error(string fallback)

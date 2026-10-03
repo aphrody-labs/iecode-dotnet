@@ -5,6 +5,14 @@ namespace IECODE.Core.Tests;
 
 public sealed class GameDiscoveryTests
 {
+    [Theory]
+    [InlineData("ssh://configured-host/arbitrary/location")]
+    [InlineData("https://example.test/game/data")]
+    public void RemoteSourcesArePreservedInsteadOfBecomingLocalPaths(string source)
+    {
+        Assert.True(Native.NativeGameVfs.IsRemoteSource(source));
+        Assert.Equal(source, IEVRGame.ResolveGamePath(source));
+    }
     [Fact]
     public void NativeTypedConfigNumbersAreCultureIndependent()
     {

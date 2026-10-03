@@ -10,6 +10,16 @@ public static class VfsCommand
     public static Command Create(Option<string?> gameOption)
     {
         var command = new Command("vfs", "Read the installed game through the native NIE virtual file system");
+        var locate = new Command("locate", "Locate a local/HTTP/SSH source without mounting archives");
+        var locateJson = new Option<bool>("--json", "Output source and Rust discovery latency");
+        locate.AddOption(locateJson);
+        locate.SetHandler((string? game, bool json) => {
+            try {
+                var result = NativeGameVfs.Locate(game);
+                Console.WriteLine(json ? result.GetRawText() : result.GetProperty("source").GetString());
+            } catch (Exception error) { Console.Error.WriteLine($"Error: {error.Message}"); Environment.ExitCode = 1; }
+        }, gameOption, locateJson);
+        command.AddCommand(locate);
         var stats = new Command("stats", "Count indexed virtual files");
         var statsJson = new Option<bool>("--json", "Output JSON");
         stats.AddOption(statsJson);
@@ -43,7 +53,7 @@ public static class VfsCommand
 
     private static void Run(string? path, Action<NativeGameVfs> action)
     {
-        try { using var vfs = new NativeGameVfs(path ?? IEVRGame.ResolveDefaultGamePath()); action(vfs); }
+        try { using var vfs = new NativeGameVfs(path); action(vfs); }
         catch (Exception error) { Console.Error.WriteLine($"Error: {error.Message}"); Environment.ExitCode = 1; }
     }
 }

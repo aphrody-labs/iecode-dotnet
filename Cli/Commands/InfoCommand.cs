@@ -11,7 +11,15 @@ public static class InfoCommand
     {
         try
         {
-            using var game = new IEVRGame(gamePath);
+            string source = IECODE.Core.Native.NativeGameVfs.ResolveSource(gamePath);
+            if (IECODE.Core.Native.NativeGameVfs.IsRemoteSource(source))
+            {
+                using var vfs = new IECODE.Core.Native.NativeGameVfs(source);
+                if (json) Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new { source, entry_count = vfs.Count, executable_metadata = (object?)null }));
+                else Console.WriteLine($"Remote VFS: {source}\nVirtual files: {vfs.Count}");
+                return;
+            }
+            using var game = new IEVRGame(source);
 
             if (!game.IsValid)
             {

@@ -11,7 +11,19 @@ public static class AnalyzeCommand
     {
         try
         {
-            using var game = new IEVRGame(gamePath);
+            string source = IECODE.Core.Native.NativeGameVfs.ResolveSource(gamePath);
+            if (IECODE.Core.Native.NativeGameVfs.IsRemoteSource(source))
+            {
+                using var remote = new IECODE.Core.Native.NativeGameVfs(source);
+                var scan = Scan(remote, deep);
+                Console.WriteLine($"Remote VFS: {source}\nIndexed virtual files: {remote.Count}\nAnalyzed entries: {scan.Count}");
+                foreach (var extension in scan.Extensions.OrderByDescending(e => e.Value).Take(15))
+                    Console.WriteLine($"{extension.Key,-15} : {extension.Value,6}");
+                if (!string.IsNullOrEmpty(output))
+                    await File.WriteAllTextAsync(output, System.Text.Json.JsonSerializer.Serialize(new { source, entry_count = remote.Count, analyzed_entries = scan.Count, limit = deep ? (int?)null : 10000, file_types = scan.Extensions }));
+                return;
+            }
+            using var game = new IEVRGame(source);
 
             if (!game.IsValid)
             {
@@ -40,16 +52,7 @@ public static class AnalyzeCommand
             Console.WriteLine("📦 CPK Analysis:");
 
             using var vfs = new IECODE.Core.Native.NativeGameVfs(game.GamePath);
-            int totalFiles = 0;
-            var extensions = new Dictionary<string, int>();
-            foreach (var entry in (deep ? vfs.Entries() : vfs.Entries().Take(10000)))
-            {
-                string path = entry.GetProperty("path").GetString() ?? "";
-                string extension = Path.GetExtension(path).ToLowerInvariant();
-                if (extension.Length == 0) extension = "(no ext)";
-                extensions[extension] = extensions.GetValueOrDefault(extension) + 1;
-                totalFiles++;
-            }
+            var (totalFiles, extensions) = Scan(vfs, deep);
             Console.WriteLine($"   Indexed virtual files: {vfs.Count}");
             Console.WriteLine($"   Analyzed virtual entries: {totalFiles}" + (deep ? " (all)" : " (limit 10000; use --deep for all)"));
             foreach (var extension in extensions.OrderByDescending(e => e.Value).Take(15))
@@ -83,5 +86,19 @@ public static class AnalyzeCommand
             }
             Environment.ExitCode = 1;
         }
+    }
+
+    private static (int Count, Dictionary<string, int> Extensions) Scan(IECODE.Core.Native.NativeGameVfs vfs, bool deep)
+    {
+        int count = 0;
+        var extensions = new Dictionary<string, int>();
+        foreach (var entry in deep ? vfs.Entries() : vfs.Entries().Take(10000))
+        {
+            string extension = Path.GetExtension(entry.GetProperty("path").GetString() ?? "").ToLowerInvariant();
+            if (extension.Length == 0) extension = "(no ext)";
+            extensions[extension] = extensions.GetValueOrDefault(extension) + 1;
+            count++;
+        }
+        return (count, extensions);
     }
 }

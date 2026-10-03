@@ -89,8 +89,9 @@ public class GameDataMapper
 
     private CfgBin? LoadCfgBin(string relativePath, string? filePattern = null)
     {
-        using var game = new IEVRGame(_dumpPath);
-        if (File.Exists(game.CpkListPath))
+        bool remote = Native.NativeGameVfs.IsRemoteSource(_dumpPath);
+        using var game = remote ? null : new IEVRGame(_dumpPath);
+        if (remote || File.Exists(game!.CpkListPath))
         {
             using var vfs = new IECODE.Core.Native.NativeGameVfs(_dumpPath);
             string directory = relativePath.Replace('\\', '/').Trim('/');

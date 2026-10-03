@@ -133,7 +133,7 @@ public class CharacterDataPipeline
     }
 
     private static string ResolveDumpPath(string? userPath) =>
-        IEVRGame.ResolveGamePath(userPath ?? IEVRGame.ResolveDefaultGamePath());
+        Native.NativeGameVfs.ResolveSource(userPath);
 
 }
 

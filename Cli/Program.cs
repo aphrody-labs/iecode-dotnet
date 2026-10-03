@@ -19,7 +19,7 @@ public static class Program
         // Global options
         var gamePathOption = new Option<string?>(
             aliases: ["--game", "-g"],
-            description: "Path to IEVR game directory (default: Steam install path)")
+            description: "Game root, data directory, nie.exe or HTTP/SSH source (default: shared discovery)")
         {
             IsRequired = false
         };

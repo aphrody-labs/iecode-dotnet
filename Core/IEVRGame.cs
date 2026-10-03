@@ -124,6 +124,7 @@ public sealed class IEVRGame : IDisposable
     /// <summary>Normalize an installed game root, data directory or executable path.</summary>
     public static string ResolveGamePath(string path)
     {
+        if (Native.NativeGameVfs.IsRemoteSource(path)) return path;
         string root = Path.GetFullPath(path);
         if (File.Exists(root) && Path.GetFileName(root).Equals(ExecutableName, StringComparison.OrdinalIgnoreCase))
             return Path.GetDirectoryName(root) ?? throw new ArgumentException("Executable path has no parent directory.", nameof(path));
@@ -138,44 +139,8 @@ public sealed class IEVRGame : IDisposable
         return root;
     }
 
-    /// <summary>
-    /// Résout le chemin du jeu par défaut (aucun chemin explicite fourni). Ordre :
-    /// 1. variable d'env <c>IECODE_GAME_PATH</c> (override explicite) ;
-    /// 2. premier candidat existant (bibliothèques Steam usuelles Linux/WSL) contenant
-    ///    <c>data/cpk_list.cfg.bin</c> ;
-    /// 3. les racines Steam dérivées de l'environnement hôte ;
-    /// 4. le répertoire courant en dernier recours.
-    /// Permet d'utiliser la CLI sans <c>--game</c> sur un poste Windows ou WSL.
-    /// </summary>
-    public static string ResolveDefaultGamePath()
-    {
-        var env = Environment.GetEnvironmentVariable("IECODE_GAME_PATH");
-        if (string.IsNullOrWhiteSpace(env)) env = Environment.GetEnvironmentVariable("NIE_GAME_DIR");
-        if (!string.IsNullOrWhiteSpace(env))
-            return env;
-
-        string current = ResolveGamePath(Directory.GetCurrentDirectory());
-        if (File.Exists(Path.Combine(current, ExecutableName))) return current;
-        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        string[] candidates =
-        [
-            Path.Combine(home, ".local", "share", "Steam", "steamapps", "common", "INAZUMA ELEVEN Victory Road"),
-            Path.Combine(home, ".steam", "steam", "steamapps", "common", "INAZUMA ELEVEN Victory Road"),
-        ];
-
-        foreach (var candidate in candidates)
-            if (File.Exists(Path.Combine(candidate, "data", "cpk_list.cfg.bin")))
-                return candidate;
-
-        foreach (var steamPath in IEVRConstants.SteamPaths)
-        {
-            var candidate = Path.Combine(steamPath, "steamapps", "common", SteamGameFolderName);
-            if (Directory.Exists(candidate))
-                return candidate;
-        }
-
-        return Directory.GetCurrentDirectory();
-    }
+    /// <summary>Use the shared Rust installation index and environment precedence.</summary>
+    public static string ResolveDefaultGamePath() => Native.NativeGameVfs.ResolveSource();
 
     #endregion
 

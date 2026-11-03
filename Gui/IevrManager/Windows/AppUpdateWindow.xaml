@@ -4,7 +4,7 @@
         Title="App Update"
         Height="400" Width="600"
         WindowStartupLocation="CenterOwner"
-        Background="{StaticResource BgBrush}"
+        Background="{DynamicResource BgBrush}"
         ResizeMode="NoResize">
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -18,7 +18,7 @@
                    Text="Update Available"
                    FontSize="18"
                    FontWeight="Bold"
-                   Foreground="{StaticResource TextBrush}"
+                   Foreground="{DynamicResource TextBrush}"
                    Margin="0,0,0,16"/>
 
         <ScrollViewer Grid.Row="1" 
@@ -27,12 +27,12 @@
             <StackPanel>
                 <TextBlock x:Name="MessageText"
                            TextWrapping="Wrap"
-                           Foreground="{StaticResource TextBrush}"
+                           Foreground="{DynamicResource TextBrush}"
                            Margin="0,0,0,12"/>
                 
                 <TextBlock x:Name="ReleaseNotesLabel"
                            TextWrapping="Wrap"
-                           Foreground="{StaticResource TextBrush}"
+                           Foreground="{DynamicResource TextBrush}"
                            FontSize="12"
                            FontWeight="Bold"
                            Margin="0,8,0,4"

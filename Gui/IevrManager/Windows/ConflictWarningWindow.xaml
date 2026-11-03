@@ -8,8 +8,8 @@
         Background="Transparent"
         ShowInTaskbar="False"
         ResizeMode="NoResize">
-    <Border Background="{StaticResource BgBrush}"
-            BorderBrush="{StaticResource BorderBrush}"
+    <Border Background="{DynamicResource BgBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="2"
             CornerRadius="8"
             Padding="20">
@@ -25,14 +25,14 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
                 <TextBlock Text="⚠" 
                            FontSize="32" 
-                           Foreground="{StaticResource WarningBrush}"
+                           Foreground="{DynamicResource WarningBrush}"
                            VerticalAlignment="Center"
                            Margin="0,0,12,0"/>
                 <TextBlock x:Name="TitleText"
                            Text="File Conflicts Detected" 
                            FontSize="18" 
                            FontWeight="Bold"
-                           Foreground="{StaticResource TextBrush}"
+                           Foreground="{DynamicResource TextBrush}"
                            VerticalAlignment="Center"/>
             </StackPanel>
 
@@ -40,7 +40,7 @@
             <TextBlock Grid.Row="1"
                        TextWrapping="Wrap"
                        FontSize="14"
-                       Foreground="{StaticResource TextBrush}"
+                       Foreground="{DynamicResource TextBrush}"
                        Margin="0,0,0,15">
                 <Run x:Name="WarningMessage1" Text="Multiple mods are trying to modify the same files. "/>
                 <Run x:Name="WarningMessage2" Text="The mod with higher priority will override the others." FontWeight="Bold"/>
@@ -57,20 +57,20 @@
                 <ItemsControl x:Name="ConflictsListControl">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="{StaticResource BorderBrush}"
+                            <Border BorderBrush="{DynamicResource BorderBrush}"
                                     BorderThickness="1"
                                     CornerRadius="4"
                                     Padding="8"
                                     Margin="0,4">
                                 <StackPanel>
                                     <TextBlock Text="{Binding Key}" 
-                                               Foreground="{StaticResource TextBrush}"
+                                               Foreground="{DynamicResource TextBrush}"
                                                FontSize="12"
                                                FontWeight="Bold"
                                                TextWrapping="Wrap"
                                                Margin="0,0,0,4"/>
                                     <TextBlock Text="{Binding Value}" 
-                                               Foreground="{StaticResource TextBrush}"
+                                               Foreground="{DynamicResource TextBrush}"
                                                FontSize="11"
                                                TextWrapping="Wrap"
                                                Margin="10,0,0,0"/>
@@ -93,19 +93,19 @@
                         Click="Cancel_Click">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource AccentButtonStyle}">
-                            <Setter Property="Background" Value="{StaticResource ErrorBrush}"/>
-                            <Setter Property="Foreground" Value="White"/>
-                            <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ErrorBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource OnErrorBrush}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource ErrorBrush}"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#d46b5a"/>
-                                    <Setter Property="BorderBrush" Value="#d46b5a"/>
-                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="Background" Value="{DynamicResource ErrorHoverBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource ErrorHoverBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource OnErrorBrush}"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="#c05a4a"/>
-                                    <Setter Property="BorderBrush" Value="#c05a4a"/>
-                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="Background" Value="{DynamicResource ErrorActiveBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource ErrorActiveBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource OnErrorBrush}"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>

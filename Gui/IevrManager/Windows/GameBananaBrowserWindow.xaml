@@ -4,7 +4,7 @@
         Title="GameBanana Mods"
         Height="720" Width="1200"
         WindowStartupLocation="CenterOwner"
-        Background="{StaticResource BgBrush}">
+        Background="{DynamicResource BgBrush}">
     <Grid Margin="14">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -30,7 +30,7 @@
                        Grid.Column="1"
                        Text="Search"
                        VerticalAlignment="Center"
-                       Foreground="{StaticResource TextBrush}"
+                       Foreground="{DynamicResource TextBrush}"
                        Margin="6,0,6,0"/>
             <TextBox x:Name="SearchBox"
                      Grid.Column="2"
@@ -40,7 +40,7 @@
             <TextBlock x:Name="StatusText"
                        Grid.Column="3"
                        VerticalAlignment="Center"
-                       Foreground="{StaticResource TextBrush}"
+                       Foreground="{DynamicResource TextBrush}"
                        FontWeight="Bold"
                        Text="Loading mods..."/>
         </Grid>
@@ -50,7 +50,7 @@
                  SelectionMode="Single"
                  MouseDoubleClick="ModsList_MouseDoubleClick"
                  BorderThickness="0"
-                 Background="{StaticResource BgBrush}"
+                 Background="{DynamicResource BgBrush}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
@@ -65,14 +65,14 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="{StaticResource AccentBrush}"
+                    <Border BorderBrush="{DynamicResource AccentBrush}"
                             BorderThickness="1"
                             CornerRadius="6"
                             Margin="6"
                             Padding="8"
                             Width="260"
                             Height="240"
-                            Background="{StaticResource BgBrush}"
+                            Background="{DynamicResource BgBrush}"
                             Cursor="Hand">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -83,7 +83,7 @@
                             </Grid.RowDefinitions>
                             <StackPanel x:Name="ContentPanel" Grid.RowSpan="4">
                                 <Border Height="140" 
-                                        Background="{StaticResource AccentBrush}" 
+                                        Background="{DynamicResource AccentBrush}" 
                                         Opacity="0.1"
                                         CornerRadius="4"
                                         Margin="0,0,0,6">
@@ -98,7 +98,7 @@
                                            TextTrimming="CharacterEllipsis"
                                            MaxHeight="22"
                                            FontWeight="Bold"
-                                           Foreground="{StaticResource TextBrightBrush}"
+                                           Foreground="{DynamicResource TextBrightBrush}"
                                            Margin="0,0,0,4"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0" HorizontalAlignment="Stretch">
                                     <Button Content="Open"
@@ -123,17 +123,17 @@
                                 <Rectangle Height="140"
                                            RadiusX="4"
                                            RadiusY="4"
-                                           Fill="{StaticResource AccentBrush}"
+                                           Fill="{DynamicResource AccentBrush}"
                                            Opacity="0.12"
                                            Margin="0,0,0,6"/>
                                 <Rectangle Height="16"
-                                           Fill="{StaticResource TextBrush}"
+                                           Fill="{DynamicResource TextBrush}"
                                            Opacity="0.16"
                                            RadiusX="3"
                                            RadiusY="3"
                                            Margin="0,0,0,6"/>
                                 <Rectangle Height="34"
-                                           Fill="{StaticResource AccentBrush}"
+                                           Fill="{DynamicResource AccentBrush}"
                                            Opacity="0.14"
                                            RadiusX="4"
                                            RadiusY="4"/>
@@ -158,7 +158,7 @@
             <TextBlock x:Name="FooterText"
                        Grid.Column="0"
                        Text="Double click opens the mod page."
-                       Foreground="{StaticResource TextBrush}"
+                       Foreground="{DynamicResource TextBrush}"
                        Loaded="FooterText_Loaded"/>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                 <Button x:Name="PrevPageButton"
@@ -170,7 +170,7 @@
                 <TextBlock x:Name="PageIndicator"
                            Text="Page 1"
                            VerticalAlignment="Center"
-                           Foreground="{StaticResource TextBrush}"
+                           Foreground="{DynamicResource TextBrush}"
                            Margin="0,0,8,0"/>
                 <Button x:Name="NextPageButton"
                         Content="Next"

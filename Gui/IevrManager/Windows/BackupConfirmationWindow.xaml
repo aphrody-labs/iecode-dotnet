@@ -4,7 +4,7 @@
         Title="Confirm Backup"
         Height="220" Width="420"
         WindowStartupLocation="CenterOwner"
-        Background="{StaticResource BgBrush}">
+        Background="{DynamicResource BgBrush}">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -17,13 +17,13 @@
                    Text="Confirm Backup"
                    FontSize="16"
                    FontWeight="Bold"
-                   Foreground="{StaticResource TextBrush}"
+                   Foreground="{DynamicResource TextBrush}"
                    Margin="0,0,0,8"/>
 
         <TextBlock Grid.Row="1"
                    x:Name="MessageText"
                    TextWrapping="Wrap"
-                   Foreground="{StaticResource TextBrush}"/>
+                   Foreground="{DynamicResource TextBrush}"/>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
             <Button x:Name="ConfirmButton"

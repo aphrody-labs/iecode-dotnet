@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Downloads" Height="370" Width="600"
         WindowStartupLocation="CenterOwner"
-        Background="{StaticResource BgBrush}">
+        Background="{DynamicResource BgBrush}">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -14,14 +14,14 @@
         <!-- Title -->
         <Label x:Name="TitleLabel" Grid.Row="0" Content="Download Links" 
                FontSize="18" FontWeight="Bold" 
-               Foreground="{StaticResource TextBrush}"
+               Foreground="{DynamicResource TextBrush}"
                Margin="0,0,0,10"/>
 
         <!-- Links -->
         <StackPanel Grid.Row="1" Margin="0,10" Orientation="Vertical">
             <TextBlock x:Name="GameBananaLink" 
                        Text="🔗 Download Mods from GameBanana" 
-                       Foreground="{StaticResource AccentBrush}"
+                       Foreground="{DynamicResource AccentBrush}"
                        FontSize="12"
                        Cursor="Hand"
                        MouseEnter="Link_MouseEnter"
@@ -31,7 +31,7 @@
 
             <TextBlock x:Name="ViolaLink" 
                        Text="🔗 Download Viola.CLI-Portable.exe" 
-                       Foreground="{StaticResource AccentBrush}"
+                       Foreground="{DynamicResource AccentBrush}"
                        FontSize="12"
                        Cursor="Hand"
                        MouseEnter="Link_MouseEnter"
@@ -41,7 +41,7 @@
             
             <TextBlock x:Name="CpkListLink" 
                        Text="🔗 cpk_list.cfg.bin repository" 
-                       Foreground="{StaticResource AccentBrush}"
+                       Foreground="{DynamicResource AccentBrush}"
                        FontSize="12"
                        Cursor="Hand"
                        MouseEnter="Link_MouseEnter"

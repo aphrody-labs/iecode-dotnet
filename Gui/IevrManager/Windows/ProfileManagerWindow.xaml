@@ -33,17 +33,17 @@
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="{Binding Name}" 
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextBrightBrush}"
+                                       Foreground="{DynamicResource TextBrightBrush}"
                                        FontSize="14"/>
                             <TextBlock Text="{Binding ModsCount}" 
                                        FontSize="11"
-                                       Foreground="{StaticResource TimestampBrush}"
+                                       Foreground="{DynamicResource TimestampBrush}"
                                        Margin="0,2,0,0"/>
                         </StackPanel>
                         <TextBlock Grid.Column="1"
                                    Text="{Binding LastModifiedDateDisplay}"
                                    FontSize="10"
-                                   Foreground="{StaticResource TimestampBrush}"
+                                   Foreground="{DynamicResource TimestampBrush}"
                                    VerticalAlignment="Center"
                                    Margin="10,0,0,0"/>
                     </Grid>

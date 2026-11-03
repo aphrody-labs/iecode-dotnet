@@ -8,8 +8,8 @@
         Background="Transparent"
         ShowInTaskbar="False"
         ResizeMode="NoResize">
-    <Border Background="{StaticResource BgBrush}"
-            BorderBrush="{StaticResource BorderBrush}"
+    <Border Background="{DynamicResource BgBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="2"
             CornerRadius="8"
             Padding="20">
@@ -30,7 +30,7 @@
                            Text="Message" 
                            FontSize="18" 
                            FontWeight="Bold"
-                           Foreground="{StaticResource TextBrightBrush}"
+                           Foreground="{DynamicResource TextBrightBrush}"
                            VerticalAlignment="Center"/>
             </StackPanel>
 
@@ -39,7 +39,7 @@
                        Grid.Row="1"
                        TextWrapping="Wrap"
                        FontSize="14"
-                       Foreground="{StaticResource TextBrush}"
+                       Foreground="{DynamicResource TextBrush}"
                        Margin="0,0,0,15"/>
 
             <!-- Buttons -->

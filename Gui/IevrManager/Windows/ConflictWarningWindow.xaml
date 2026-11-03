@@ -23,7 +23,7 @@
 
             <!-- Icon and Title -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                <TextBlock Text="⚠" 
+                <TextBlock Text="&#xE002;" FontFamily="{StaticResource IconFont}"
                            FontSize="32" 
                            Foreground="{DynamicResource WarningBrush}"
                            VerticalAlignment="Center"

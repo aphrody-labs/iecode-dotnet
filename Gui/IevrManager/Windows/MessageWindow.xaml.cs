@@ -77,20 +77,20 @@ namespace IEVRModManager.Windows
             switch (type)
             {
                 case MessageType.Error:
-                    IconText.Text = "✕";
+                    IconText.Text = "\uE000"; // Material Symbols error
                     IconText.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "ErrorBrush");
                     break;
                 case MessageType.Warning:
-                    IconText.Text = "⚠";
+                    IconText.Text = "\uE002"; // Material Symbols warning
                     IconText.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "WarningBrush");
                     break;
                 case MessageType.Success:
-                    IconText.Text = "✓";
+                    IconText.Text = "\uE86C"; // Material Symbols check_circle
                     IconText.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SuccessBrush");
                     break;
                 case MessageType.Info:
                 default:
-                    IconText.Text = "ℹ";
+                    IconText.Text = "\uE88E"; // Material Symbols info
                     IconText.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "AccentBrush");
                     break;
             }

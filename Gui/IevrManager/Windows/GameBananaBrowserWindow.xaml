@@ -56,6 +56,27 @@
                 <Style TargetType="ListBoxItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                    <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <Border x:Name="Card" Background="Transparent" CornerRadius="8">
+                                    <ContentPresenter/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Card" Property="Background" Value="{DynamicResource HoverBgBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsKeyboardFocused" Value="True">
+                                        <Setter TargetName="Card" Property="Background" Value="{DynamicResource FocusBgBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Card" Property="Background" Value="{DynamicResource SelectedBgBrush}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemsPanel>
@@ -83,8 +104,7 @@
                             </Grid.RowDefinitions>
                             <StackPanel x:Name="ContentPanel" Grid.RowSpan="4">
                                 <Border Height="140" 
-                                        Background="{DynamicResource AccentBrush}" 
-                                        Opacity="0.1"
+                                        Background="{DynamicResource TrackBrush}"
                                         CornerRadius="4"
                                         Margin="0,0,0,6">
                                     <Image x:Name="ModImage"
@@ -123,18 +143,15 @@
                                 <Rectangle Height="140"
                                            RadiusX="4"
                                            RadiusY="4"
-                                           Fill="{DynamicResource AccentBrush}"
-                                           Opacity="0.12"
+                                           Fill="{DynamicResource TrackBrush}"
                                            Margin="0,0,0,6"/>
                                 <Rectangle Height="16"
-                                           Fill="{DynamicResource TextBrush}"
-                                           Opacity="0.16"
+                                           Fill="{DynamicResource TrackBrush}"
                                            RadiusX="3"
                                            RadiusY="3"
                                            Margin="0,0,0,6"/>
                                 <Rectangle Height="34"
-                                           Fill="{DynamicResource AccentBrush}"
-                                           Opacity="0.14"
+                                           Fill="{DynamicResource TrackBrush}"
                                            RadiusX="4"
                                            RadiusY="4"/>
                             </StackPanel>

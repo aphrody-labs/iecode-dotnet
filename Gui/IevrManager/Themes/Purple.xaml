@@ -9,8 +9,14 @@
     <Color x:Key="BgColor">#16111b</Color>         <!-- surface -->
     <Color x:Key="CardBg">#231e27</Color>          <!-- surface-container -->
     <Color x:Key="HoverBg">#332d37</Color>         <!-- on-surface 8% over surface-container -->
+    <Color x:Key="FocusBg">#37313b</Color>         <!-- on-surface 10% over surface-container -->
+    <Color x:Key="PressedBg">#37313b</Color>       <!-- on-surface 10% over surface-container -->
     <Color x:Key="SelectedBg">#5a357e</Color>      <!-- secondary-container -->
+    <Color x:Key="TrackColor">#39323d</Color>      <!-- surface-container-highest -->
+    <Color x:Key="TrackHover">#47404b</Color>      <!-- on-surface 8% over surface-container-highest -->
     <Color x:Key="BorderColor">#4d4354</Color>     <!-- outline-variant -->
+    <Color x:Key="OutlineColor">#988d9f</Color>    <!-- outline -->
+    <Color x:Key="FocusRingColor">#ddb7ff</Color>  <!-- secondary -->
     <Color x:Key="TextColor">#eadfed</Color>       <!-- on-surface -->
     <Color x:Key="TextBrightColor">#eadfed</Color> <!-- on-surface -->
     <Color x:Key="TimestampColor">#cfc2d6</Color>  <!-- on-surface-variant -->
@@ -34,8 +40,14 @@
     <SolidColorBrush x:Key="BgBrush" Color="{StaticResource BgColor}"/>
     <SolidColorBrush x:Key="CardBgBrush" Color="{StaticResource CardBg}"/>
     <SolidColorBrush x:Key="HoverBgBrush" Color="{StaticResource HoverBg}"/>
+    <SolidColorBrush x:Key="FocusBgBrush" Color="{StaticResource FocusBg}"/>
+    <SolidColorBrush x:Key="PressedBgBrush" Color="{StaticResource PressedBg}"/>
     <SolidColorBrush x:Key="SelectedBgBrush" Color="{StaticResource SelectedBg}"/>
+    <SolidColorBrush x:Key="TrackBrush" Color="{StaticResource TrackColor}"/>
+    <SolidColorBrush x:Key="TrackHoverBrush" Color="{StaticResource TrackHover}"/>
     <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="OutlineBrush" Color="{StaticResource OutlineColor}"/>
+    <SolidColorBrush x:Key="FocusRingBrush" Color="{StaticResource FocusRingColor}"/>
     <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}"/>
     <SolidColorBrush x:Key="TextBrightBrush" Color="{StaticResource TextBrightColor}"/>
     <SolidColorBrush x:Key="TimestampBrush" Color="{StaticResource TimestampColor}"/>

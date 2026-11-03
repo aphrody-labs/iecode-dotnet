@@ -51,7 +51,7 @@ function extendedRoles(mode: Mode): Record<string, string> {
   return out;
 }
 
-const STATE = { hover: 0.08, pressed: 0.1, disabledContainer: 0.12, disabledContent: 0.38 } as const;
+const STATE = { hover: 0.08, focus: 0.1, pressed: 0.1, disabledContainer: 0.12, disabledContent: 0.38 } as const;
 
 /** An M3 state layer: `layer` at `opacity` composited over `base` (CSS color-mix in srgb). */
 function over(layer: string, opacity: number, base: string): string {
@@ -82,8 +82,14 @@ function palette(p: Palette): string {
     ["BgColor", role("surface"), "surface"],
     ["CardBg", role("surfaceContainer"), "surface-container"],
     ["HoverBg", over(role("onSurface"), STATE.hover, role("surfaceContainer")), "on-surface 8% over surface-container"],
+    ["FocusBg", over(role("onSurface"), STATE.focus, role("surfaceContainer")), "on-surface 10% over surface-container"],
+    ["PressedBg", over(role("onSurface"), STATE.pressed, role("surfaceContainer")), "on-surface 10% over surface-container"],
     ["SelectedBg", role("secondaryContainer"), "secondary-container"],
+    ["TrackColor", role("surfaceContainerHighest"), "surface-container-highest"],
+    ["TrackHover", over(role("onSurface"), STATE.hover, role("surfaceContainerHighest")), "on-surface 8% over surface-container-highest"],
     ["BorderColor", role("outlineVariant"), "outline-variant"],
+    ["OutlineColor", role("outline"), "outline"],
+    ["FocusRingColor", role("secondary"), "secondary"],
     ["TextColor", role("onSurface"), "on-surface"],
     ["TextBrightColor", role("onSurface"), "on-surface"],
     ["TimestampColor", role("onSurfaceVariant"), "on-surface-variant"],

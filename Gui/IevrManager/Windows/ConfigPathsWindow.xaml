@@ -101,51 +101,10 @@
                       Width="350"
                       HorizontalAlignment="Left">
                 <ComboBox.ItemContainerStyle>
-                    <Style TargetType="ComboBoxItem">
-                        <Setter Property="Foreground" Value="{DynamicResource TextBrightBrush}"/>
+                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
                         <Setter Property="Width" Value="350"/>
                     </Style>
                 </ComboBox.ItemContainerStyle>
-                <ComboBox.Resources>
-                    <Style TargetType="ToggleButton">
-                        <Setter Property="Padding" Value="12,8"/>
-                        <Setter Property="Foreground" Value="{DynamicResource TextBrightBrush}"/>
-                        <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
-                        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
-                        <Setter Property="Cursor" Value="Hand"/>
-                        <Setter Property="SnapsToDevicePixels" Value="True"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ToggleButton">
-                                    <Border Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="4"
-                                            Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter HorizontalAlignment="Center"
-                                                          VerticalAlignment="Center"
-                                                          RecognizesAccessKey="True"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource AccentActiveBrush}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource AccentActiveBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.6"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}"
-                                     Color="{Binding Source={DynamicResource TextBrightBrush}, Path=Color}"/>
-                </ComboBox.Resources>
                 <ComboBoxItem Content="System" Tag="System"/>
                 <ComboBoxItem Content="English" Tag="en-US"/>
                 <ComboBoxItem Content="Español" Tag="es-ES"/>
@@ -171,51 +130,10 @@
                       Width="350"
                       HorizontalAlignment="Left">
                 <ComboBox.ItemContainerStyle>
-                    <Style TargetType="ComboBoxItem">
-                        <Setter Property="Foreground" Value="{DynamicResource TextBrightBrush}"/>
+                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
                         <Setter Property="Width" Value="350"/>
                     </Style>
                 </ComboBox.ItemContainerStyle>
-                <ComboBox.Resources>
-                    <Style TargetType="ToggleButton">
-                        <Setter Property="Padding" Value="12,8"/>
-                        <Setter Property="Foreground" Value="{DynamicResource TextBrightBrush}"/>
-                        <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
-                        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
-                        <Setter Property="Cursor" Value="Hand"/>
-                        <Setter Property="SnapsToDevicePixels" Value="True"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ToggleButton">
-                                    <Border Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="4"
-                                            Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter HorizontalAlignment="Center"
-                                                          VerticalAlignment="Center"
-                                                          RecognizesAccessKey="True"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource AccentActiveBrush}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource AccentActiveBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.6"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}"
-                                     Color="{Binding Source={DynamicResource TextBrightBrush}, Path=Color}"/>
-                </ComboBox.Resources>
                 <ComboBoxItem Content="System" Tag="System"/>
                 <ComboBoxItem Content="Light" Tag="Light"/>
                 <ComboBoxItem Content="Dark" Tag="Dark"/>

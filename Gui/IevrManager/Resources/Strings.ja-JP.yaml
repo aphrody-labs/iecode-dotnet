@@ -225,4 +225,3 @@ CheckForUpdates: "更新を確認"
 CheckingForUpdates: "更新を確認中..."
 NoUpdatesAvailable: "最新バージョンを使用しています。"
 UpdateCheckFailed: "更新を確認できませんでした。インターネット接続を確認してください。"
-

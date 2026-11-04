@@ -17,4 +17,3 @@ A more detailled explanation is given in **tutorial.md**.
 [Alpha](https://github.com/AlphaXeno/)
 
 [Kuriimu2](https://github.com/FanTranslatorsInternational/Kuriimu2) - License in KURIIMU_2_LICENSE
-

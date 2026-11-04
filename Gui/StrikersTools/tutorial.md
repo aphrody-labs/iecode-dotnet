@@ -1,7 +1,6 @@
-
 # General
 
-**mcb1.bln** contains most files of the game, but they are copied in other archives *(dat/grp/scn/scn_sh/strap/ui.bin)*. We could work only on the mcb1.bln, but some files are copied in multiple locations within it, and others require to be modified in both the mcb1 and their bin archive.
+**mcb1.bln** contains most files of the game, but they are copied in other archives _(dat/grp/scn/scn_sh/strap/ui.bin)_. We could work only on the mcb1.bln, but some files are copied in multiple locations within it, and others require to be modified in both the mcb1 and their bin archive.
 
 [Kuriimu2](https://github.com/FanTranslatorsInternational/Kuriimu2) can help with modifying the BLN and some formats used in the game, but it can't import files to the BIN archives (unless you do it manually, which is harder).
 
@@ -10,7 +9,6 @@ With Strikers2013-Tools, you can extract the bin archives by going in **Archive*
 The files in the game are compressed with an LZ/RLE based compression, "Shade Lz" in Kuriimu. In most cases it's the regular one, but the files in dat.bin are compressed with the headerless version.
 
 You can let the tool automatically compress files by adding `.dec` at the end of their filenames.
-
 
 # Text
 
@@ -23,6 +21,7 @@ There are three text files in the game (I'll use the dat.bin and mcb1.bln locati
 In the **Text** tab, select the text file, and **Export** to export its contents to a txt file, and **Import** to import the txt file back to the original .bin file.
 
 Texts use commands, described here (thanks to Alpha):
+
 ```
 TEXT COMMANDS :
 X refers to a number that you write
@@ -67,5 +66,3 @@ X refers to a number that you write
 Start by extracting the whole **ui.bin** archive (that's the one that contains most of the **SHTXFS/SHTXFF/SHTXF4** - texture files).
 
 To import a png back into a SHTX file, you can use Kuriimu2 or this tool.
-
-

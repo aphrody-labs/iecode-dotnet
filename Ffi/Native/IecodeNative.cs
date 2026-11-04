@@ -101,7 +101,7 @@ public static unsafe class IecodeNative
     {
         if (output != null) *output = null;
         if (outputLen != null) *outputLen = 0;
-        if (input == null || output == null || outputLen == null || inputLen < 0 ||
+        if (input == null || output == null || outputLen == null || inputLen < CriLayla.UncompressedDataSize ||
             inputLen > CriLayla.MaximumOutputSize)
             return -1;
 

@@ -227,4 +227,3 @@ CheckForUpdates: "Check for Updates"
 CheckingForUpdates: "Checking for updates..."
 NoUpdatesAvailable: "You are using the latest version."
 UpdateCheckFailed: "Could not check for updates. Please check your internet connection."
-

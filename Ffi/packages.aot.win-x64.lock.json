@@ -1,0 +1,189 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "Microsoft.DotNet.ILCompiler": {
+        "type": "Direct",
+        "requested": "[10.0.14, )",
+        "resolved": "10.0.14",
+        "contentHash": "CDQ/+XRT1JT/0u87j9exR1AociehKUzxae4KCOWxCQ1PIKbYS0F8ovxaCrqRlkylGmbhywKxV/zbbrEhWa5NXg=="
+      },
+      "Microsoft.JavaScript.NodeApi": {
+        "type": "Direct",
+        "requested": "[0.9.29-gef9453cdcf, )",
+        "resolved": "0.9.29-gef9453cdcf",
+        "contentHash": "BULJXcpZt/vtvDKiAIgb64kuvbm4hKvu4ACMsFn4ywFP4eppTqqKx+He9IfTJFA9ot90GF68yo7WTFZ5uTGQqA=="
+      },
+      "Microsoft.JavaScript.NodeApi.DotNetHost": {
+        "type": "Direct",
+        "requested": "[0.9.29-gef9453cdcf, )",
+        "resolved": "0.9.29-gef9453cdcf",
+        "contentHash": "lnw/klWmq1c8viF5tBXio748poiuyAwWbMU/aYTq1hQf4AxY6skI4OmLA/Au3JuupqAWFRAqdG2gepoFQHBwWA=="
+      },
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[10.0.14, )",
+        "resolved": "10.0.14",
+        "contentHash": "YlTamXppEQls6DYWt7RdUuwWDb0lyw/vXCaGeQpLCpsLmfwGuCkOz/vIGgMTV7ECsJcavkCOkxZXv9s8rdAHkQ=="
+      },
+      "AuroraLib.Core": {
+        "type": "Transitive",
+        "resolved": "1.4.2.4",
+        "contentHash": "tE1Rhi/b9cEStlEn4uGYpjTkujJhN3syyL/NhOdmgE0vTv2ZPPxNCvvn9npgxG/OlEmPlgUYj8EasYkUk2oE+Q=="
+      },
+      "protobuf-net": {
+        "type": "Transitive",
+        "resolved": "3.2.56",
+        "contentHash": "4IPJeTYAMNewlN8MDaFkcmR/9hLhJeo9eARnTh104zh7mf+vXT2gu5MUfUnkSQU+CH578Q6vcdU7LQDQPG6eaw==",
+        "dependencies": {
+          "protobuf-net.Core": "3.2.56"
+        }
+      },
+      "protobuf-net.Core": {
+        "type": "Transitive",
+        "resolved": "3.2.56",
+        "contentHash": "d6QOukTpDzs7zZv9tPnBZMtvHDNeHJQXUhMx54g4urUQsXK3oo9U70H9HvklYq7hlQ4A7AHJl7EVEqyCXXIl8Q=="
+      },
+      "SharpGLTF.Core": {
+        "type": "Transitive",
+        "resolved": "1.0.7",
+        "contentHash": "dZHCUl2jH1ViiLbAwyYbVfZnFqsF1e/9OhZAfLBoggOpqnsbgKQghldK3LnobmtNRp6GNZMyaNkPceqERkqmsQ=="
+      },
+      "SharpGLTF.Runtime": {
+        "type": "Transitive",
+        "resolved": "1.0.7",
+        "contentHash": "nHLEn7HlVq4KEc/2LSXtjMiWqabIirgS42kPogH6UQ+GhXUGQEOd/UjYb3xYI+ijfM9T7Q098Y9SqwbWfqs3NA==",
+        "dependencies": {
+          "SharpGLTF.Core": "1.0.7"
+        }
+      },
+      "ZstdSharp.Port": {
+        "type": "Transitive",
+        "resolved": "0.8.7",
+        "contentHash": "+4VpxvzEKaHpfTjsLRMhQHx6brqGBkIA+fjUM3wUW8ZoWpPFAeKrO2Nf4uZDeBjjzNDNxSRvLQH4b3S9Ku4JJQ=="
+      },
+      "iecode.core": {
+        "type": "Project",
+        "dependencies": {
+          "AuroraLib.Compression": "[1.3.0.1, )",
+          "BCnEncoder.Net": "[2.3.0, )",
+          "CommunityToolkit.HighPerformance": "[8.4.2, )",
+          "K4os.Compression.LZ4": "[1.3.8, )",
+          "MoonSharp": "[2.0.0, )",
+          "Newtonsoft.Json": "[13.0.3, )",
+          "Serilog": "[4.0.0, )",
+          "Serilog.Sinks.Console": "[6.0.0, )",
+          "SharpGLTF.Toolkit": "[1.0.7, )",
+          "SixLabors.ImageSharp": "[3.2.0, )",
+          "SteamKit2": "[3.4.0, )",
+          "System.IO.Hashing": "[10.0.12, )"
+        }
+      },
+      "AuroraLib.Compression": {
+        "type": "CentralTransitive",
+        "requested": "[1.3.0.1, )",
+        "resolved": "1.3.0.1",
+        "contentHash": "veBs0PWs5X3uqV4+7YjbBS/eK4pILalXEmnhM0uaYMAUVUz6bJDA+Lp5q8rpyFY5zUrAhI+BQBHOG4RL5QRo+A==",
+        "dependencies": {
+          "AuroraLib.Core": "1.4.2.4"
+        }
+      },
+      "BCnEncoder.Net": {
+        "type": "CentralTransitive",
+        "requested": "[2.3.0, )",
+        "resolved": "2.3.0",
+        "contentHash": "DJhHJiBJKXUXxlkkrv74ckzJb3wYxqIAZHjXD9G76kpsD0YyJOmqtNufHWEuJe0eH0tB1tCZn80/3JV2UVP7yQ==",
+        "dependencies": {
+          "CommunityToolkit.HighPerformance": "8.4.0"
+        }
+      },
+      "CommunityToolkit.HighPerformance": {
+        "type": "CentralTransitive",
+        "requested": "[8.4.2, )",
+        "resolved": "8.4.2",
+        "contentHash": "2hmtrrU18x6NL3mbuAqwy0KpnoEEJOuK6sH5RKQfD/jHijn2pqvqBUC7WGy9dgNBL9BDA7eOC0kirsNPMp2f4Q=="
+      },
+      "K4os.Compression.LZ4": {
+        "type": "CentralTransitive",
+        "requested": "[1.3.8, )",
+        "resolved": "1.3.8",
+        "contentHash": "LhwlPa7c1zs1OV2XadMtAWdImjLIsqFJPoRcIWAadSRn0Ri1DepK65UbWLPmt4riLqx2d40xjXRk0ogpqNtK7g=="
+      },
+      "MoonSharp": {
+        "type": "CentralTransitive",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "uiAcRh7d+53k3xW9pFDJfAFVw4RnjHVCJG05M3oPAVEVwPtFavhg1H/IpC6So4X1j9kJlzuLlA3OghhPcIvc5A=="
+      },
+      "Newtonsoft.Json": {
+        "type": "CentralTransitive",
+        "requested": "[13.0.3, )",
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+      },
+      "Serilog": {
+        "type": "CentralTransitive",
+        "requested": "[4.0.0, )",
+        "resolved": "4.0.0",
+        "contentHash": "2jDkUrSh5EofOp7Lx5Zgy0EB+7hXjjxE2ktTb1WVQmU00lDACR2TdROGKU0K1pDTBSJBN1PqgYpgOZF8mL7NJw=="
+      },
+      "Serilog.Sinks.Console": {
+        "type": "CentralTransitive",
+        "requested": "[6.0.0, )",
+        "resolved": "6.0.0",
+        "contentHash": "fQGWqVMClCP2yEyTXPIinSr5c+CBGUvBybPxjAGcf7ctDhadFhrQw03Mv8rJ07/wR5PDfFjewf2LimvXCDzpbA==",
+        "dependencies": {
+          "Serilog": "4.0.0"
+        }
+      },
+      "SharpGLTF.Toolkit": {
+        "type": "CentralTransitive",
+        "requested": "[1.0.7, )",
+        "resolved": "1.0.7",
+        "contentHash": "v4N6KzbQ6gnBdTN970191BYD1Nyo2lGOhli/Ivnt36GehKQvE8m7ROqg0sP3ixSQWNj1vj34+S7HoSNDaPzvXQ==",
+        "dependencies": {
+          "SharpGLTF.Runtime": "1.0.7"
+        }
+      },
+      "SixLabors.ImageSharp": {
+        "type": "CentralTransitive",
+        "requested": "[3.2.0, )",
+        "resolved": "3.2.0",
+        "contentHash": "TuT4QJUKO1xn6HPiH7dzadQg9eI9uin+sS+pJHAjHr0nN+k9mhgJc8XKe4WU9QJ7/mNvbK6+32d2ofUf30+bqQ=="
+      },
+      "SteamKit2": {
+        "type": "CentralTransitive",
+        "requested": "[3.4.0, )",
+        "resolved": "3.4.0",
+        "contentHash": "3UZ5Useeh+5BJ19gazEpeFc3wRasMEUkrdkgzIhwAAK9VXL9sPbQu11bp6E3W7HsPCbm2s262yuyBbYLzA+4AA==",
+        "dependencies": {
+          "System.IO.Hashing": "10.0.1",
+          "ZstdSharp.Port": "0.8.7",
+          "protobuf-net": "3.2.56"
+        }
+      },
+      "System.IO.Hashing": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "jDix4bBMYnpZdSPcnY+KDV6ik3SRMzpMKby/bZl/XUwIiflwRNAFZ0oOl61R/pSaveIJ8t1gs2BUlrGsPs/bcg=="
+      }
+    },
+    "net10.0/win-x64": {
+      "Microsoft.DotNet.ILCompiler": {
+        "type": "Direct",
+        "requested": "[10.0.14, )",
+        "resolved": "10.0.14",
+        "contentHash": "CDQ/+XRT1JT/0u87j9exR1AociehKUzxae4KCOWxCQ1PIKbYS0F8ovxaCrqRlkylGmbhywKxV/zbbrEhWa5NXg==",
+        "dependencies": {
+          "runtime.win-x64.Microsoft.DotNet.ILCompiler": "10.0.14"
+        }
+      },
+      "runtime.win-x64.Microsoft.DotNet.ILCompiler": {
+        "type": "Transitive",
+        "resolved": "10.0.14",
+        "contentHash": "B28xsyrO3PRFGL9yd1lLWdX3/wATFkaxPFM3VmGOFG8pfx7jDeb1Yz09v6n+z0jNEPAlQLqOx2noOXw8aytYNw=="
+      }
+    }
+  }
+}

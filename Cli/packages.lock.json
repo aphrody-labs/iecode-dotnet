@@ -2,12 +2,6 @@
   "version": 2,
   "dependencies": {
     "net10.0": {
-      "Microsoft.NET.ILLink.Tasks": {
-        "type": "Direct",
-        "requested": "[10.0.12, )",
-        "resolved": "10.0.12",
-        "contentHash": "xi+BDjFpW+Sb+MHFHaH6Y/gV9I8BluFwRXc1QyCdoZbIK26eNiBeFuMTe/FMwc33G1wdHCyDg7CVTmb8OdQrMQ=="
-      },
       "System.CommandLine": {
         "type": "Direct",
         "requested": "[2.0.0-beta4.22272.1, )",
@@ -62,7 +56,7 @@
           "Serilog": "[4.0.0, )",
           "Serilog.Sinks.Console": "[6.0.0, )",
           "SharpGLTF.Toolkit": "[1.0.7, )",
-          "SixLabors.ImageSharp": "[3.1.12, )",
+          "SixLabors.ImageSharp": "[3.2.0, )",
           "SteamKit2": "[3.4.0, )",
           "System.IO.Hashing": "[10.0.12, )"
         }
@@ -135,9 +129,9 @@
       },
       "SixLabors.ImageSharp": {
         "type": "CentralTransitive",
-        "requested": "[3.1.12, )",
-        "resolved": "3.1.12",
-        "contentHash": "iAg6zifihXEFS/t7fiHhZBGAdCp3FavsF4i2ZIDp0JfeYeDVzvmlbY1CNhhIKimaIzrzSi5M/NBFcWvZT2rB/A=="
+        "requested": "[3.2.0, )",
+        "resolved": "3.2.0",
+        "contentHash": "TuT4QJUKO1xn6HPiH7dzadQg9eI9uin+sS+pJHAjHr0nN+k9mhgJc8XKe4WU9QJ7/mNvbK6+32d2ofUf30+bqQ=="
       },
       "SteamKit2": {
         "type": "CentralTransitive",
@@ -156,7 +150,6 @@
         "resolved": "10.0.12",
         "contentHash": "jDix4bBMYnpZdSPcnY+KDV6ik3SRMzpMKby/bZl/XUwIiflwRNAFZ0oOl61R/pSaveIJ8t1gs2BUlrGsPs/bcg=="
       }
-    },
-    "net10.0/linux-x64": {}
+    }
   }
 }

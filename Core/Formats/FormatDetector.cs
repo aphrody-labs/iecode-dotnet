@@ -81,10 +81,10 @@ public static class FormatDetector
         [0x47344D54] = new(Format.G4MT, ".g4mt", "Level-5 Material (BE)", true, 0x47344D54, 0x544D3447),
 
         [0x4B533447] = new(Format.G4SK, ".g4sk", "Level-5 Skeleton", false, 0x47345348, 0x4B533447),
-        [0x47345348] = new(Format.G4SK, ".g4sk", "Level-5 Skeleton (BE)", true, 0x47345348, 0x4B533447),
+        [0x4734534B] = new(Format.G4SK, ".g4sk", "Level-5 Skeleton (BE)", true, 0x4734534B, 0x4B533447),
 
         [0x4B503447] = new(Format.G4PK, ".g4pk", "Level-5 Package", false, 0x47345048, 0x4B503447),
-        [0x47345048] = new(Format.G4PK, ".g4pk", "Level-5 Package (BE)", true, 0x47345048, 0x4B503447),
+        [0x4734504B] = new(Format.G4PK, ".g4pk", "Level-5 Package (BE)", true, 0x4734504B, 0x4B503447),
 
         // NEW formats from nie.exe analysis
         [0x41523447] = new(Format.G4RA, ".g4ra", "Level-5 Resource Archive", false, 0x47345241, 0x41523447),
@@ -99,6 +99,8 @@ public static class FormatDetector
         [0x5058434C] = new(Format.PXCL, ".pxcl", "Level-5 Pixel/Collision", false, 0x4C435850, 0x5058434C),
         [0x4C435850] = new(Format.PXCL, ".pxcl", "Level-5 Pixel/Collision (BE)", true, 0x4C435850, 0x5058434C),
 
+        [0x4E424452] = new(Format.CFGBIN, ".cfg.bin", "Level-5 Configuration Binary", false, 0x5244424E, 0x4E424452),
+
         // Criware formats
         [0x204B5043] = new(Format.CPK, ".cpk", "Criware Package", false, 0x43504B20, 0x204B5043),
         [0x43504B20] = new(Format.CPK, ".cpk", "Criware Package (BE)", true, 0x43504B20, 0x204B5043),
@@ -108,6 +110,7 @@ public static class FormatDetector
 
         [0x00465455] = new(Format.UTF, ".utf", "Criware UTF Table", false, 0x55544600, 0x00465455),
         [0x55544600] = new(Format.UTF, ".utf", "Criware UTF Table (BE)", true, 0x55544600, 0x00465455),
+        [0x46545540] = new(Format.UTF, ".utf", "Criware UTF Table", false, 0x40555446, 0x46545540),
 
         // Standard formats
         [0x20534444] = new(Format.DDS, ".dds", "DirectDraw Surface", false, 0x44445320, 0x20534444),
@@ -116,7 +119,6 @@ public static class FormatDetector
 
         // Additional formats
         [0x04034B50] = new(Format.ZIP, ".zip", "ZIP Archive", false, 0x504B0304, 0x04034B50),
-        [0x8B1F] = new(Format.GZIP, ".gz", "GZIP Compressed", false, 0x1F8B, 0x8B1F),
         [0xFD2FB528] = new(Format.ZSTD, ".zst", "Zstandard Compressed", false, 0x28B52FFD, 0xFD2FB528),
 
         // Level-5 XPCK format
@@ -137,6 +139,8 @@ public static class FormatDetector
     /// </summary>
     public static FormatInfo Detect(ReadOnlySpan<byte> data)
     {
+        if (data.Length >= 2 && data[0] == 0x1f && data[1] == 0x8b)
+            return new FormatInfo(Format.GZIP, ".gz", "GZIP Compressed", false, 0x1F8B, 0x8B1F);
         if (data.Length < 4)
             return new FormatInfo(Format.Unknown, "", "Unknown", false, 0, 0);
 

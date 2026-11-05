@@ -26,7 +26,7 @@
   <ItemGroup>
     <PackageReference Include="MoonSharp" />
     <PackageReference Include="SharpGLTF.Toolkit" />
-    <!-- ImageSharp 4.x requires a commercial restore key; keep the latest free 3.x line. -->
+    <!-- ImageSharp 3.2.0 enforces its licensing configuration for Release builds. -->
     <PackageReference Include="SixLabors.ImageSharp" />
     <PackageReference Include="System.IO.Hashing" />
     <PackageReference Include="CommunityToolkit.HighPerformance" />

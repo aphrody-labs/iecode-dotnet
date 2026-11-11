@@ -1,0 +1,98 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:IECODE.Gui.Shell"
+             xmlns:models="using:IEVRModManager.Models"
+             x:Class="IECODE.Gui.Shell.IevrShellView"
+             x:DataType="vm:IevrShellViewModel">
+    <Border Padding="20">
+        <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="12">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <StackPanel Spacing="4">
+                    <TextBlock FontSize="24" FontWeight="Bold" Text="IEVR tools" />
+                    <TextBlock Text="{Binding Status}" />
+                    <TextBlock Text="{Binding SteamStatus}" TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <Button Content="Detect Steam"
+                            Command="{Binding DetectSteamCommand}"
+                            AutomationProperties.Name="Detect Steam game" />
+                    <Button Content="Refresh"
+                            Command="{Binding RefreshCommand}"
+                            AutomationProperties.Name="Refresh IEVR data" />
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                <TextBlock VerticalAlignment="Center" Text="Game path" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding GamePath, Mode=TwoWay}"
+                         Watermark="Steam installation path" />
+                <Button Grid.Column="2"
+                        Content="Save configuration"
+                        Command="{Binding SaveConfigurationCommand}"
+                        AutomationProperties.Name="Save IEVR configuration" />
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                <TextBox Text="{Binding ProfileName, Mode=TwoWay}"
+                         Watermark="Profile name" />
+                <Button Grid.Column="1"
+                        Content="Save profile"
+                        Command="{Binding SaveProfileCommand}"
+                        AutomationProperties.Name="Save IEVR profile" />
+                <Button Grid.Column="2"
+                        Content="Apply profile"
+                        Command="{Binding ApplyProfileCommand}"
+                        AutomationProperties.Name="Apply selected IEVR profile" />
+                <Button Grid.Column="3"
+                        Content="Delete profile"
+                        Command="{Binding DeleteProfileCommand}"
+                        AutomationProperties.Name="Delete selected IEVR profile" />
+            </Grid>
+
+            <Grid Grid.Row="3" ColumnDefinitions="2*,*" ColumnSpacing="12">
+                <Border Padding="12" BorderThickness="1" CornerRadius="4">
+                    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="8">
+                        <TextBlock FontWeight="Bold" Text="Mods" />
+                        <TextBlock Grid.Row="1" Text="{Binding ModSummary}" />
+                        <ListBox Grid.Row="2" ItemsSource="{Binding Mods}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:ModEntry">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                        <CheckBox IsChecked="{Binding Enabled, Mode=TwoWay}"
+                                                  AutomationProperties.Name="Enable mod" />
+                                        <StackPanel Grid.Column="1" Spacing="2">
+                                            <TextBlock FontWeight="SemiBold" Text="{Binding DisplayName}" />
+                                            <TextBlock FontSize="11" Text="{Binding Name}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2"
+                                                   VerticalAlignment="Center"
+                                                   Text="{Binding Author}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Padding="12" BorderThickness="1" CornerRadius="4">
+                    <Grid RowDefinitions="Auto,*" RowSpacing="8">
+                        <TextBlock FontWeight="Bold" Text="Profiles" />
+                        <ListBox Grid.Row="1"
+                                 ItemsSource="{Binding Profiles}"
+                                 SelectedItem="{Binding SelectedProfile, Mode=TwoWay}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:ModProfile">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock FontWeight="SemiBold" Text="{Binding Name}" />
+                                        <TextBlock FontSize="11" Text="{Binding LastModifiedDate}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

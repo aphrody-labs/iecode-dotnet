@@ -1,0 +1,71 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace StrikersTools.Utils
+{
+    class Password
+    {
+        public static readonly Dictionary<int, byte[]> encryptedPasswords = new Dictionary<int, byte[]>()
+        {
+            [0] = new byte[] { 0x8D, 0xB7, 0xAF, 0xD1, 0xC9, 0xF8, 0xEB, 0xD5, 0x05, 0x52, 0x27, 0x76, 0x41, 0x34, 0x63, 0x52, 0x00, 0x00, },
+            [1] = new byte[] { 0x8D, 0xAB, 0xAF, 0xCD, 0xC9, 0xE9, 0xEB, 0xA4, 0x05, 0x28, 0x27, 0x16, 0x41, 0x65, 0x63, 0x5B, 0x00, 0x00, },
+            [2] = new byte[] { 0x8D, 0xA1, 0xAF, 0xDD, 0xC9, 0xAB, 0xEB, 0xB6, 0x05, 0x71, 0x27, 0x1C, 0x41, 0x6F, 0x63, 0x5D, 0x00, 0x00, },
+            [3] = new byte[] { 0x8C, 0x6E, 0xAE, 0xB3, 0xCA, 0x01, 0xEA, 0x20, 0x04, 0xE6, 0x26, 0xF7, 0x40, 0x9C, 0x60, 0xB9, 0x00, 0x00, },
+            [4] = new byte[] { 0x8D, 0xBC, 0xAF, 0xF9, 0xC9, 0xBC, 0xEA, 0x32, 0x04, 0xEB, 0x26, 0xF7, 0x40, 0x8C, 0x62, 0x90, 0x00, 0x00, },
+            [5] = new byte[] { 0x8D, 0xC7, 0xAF, 0x91, 0xC9, 0xB1, 0xEB, 0xD2, 0x05, 0x49, 0x27, 0x02, 0x41, 0x3B, 0x63, 0x45, 0x00, 0x00, },
+            [6] = new byte[] { 0x8D, 0xB8, 0xAF, 0x9E, 0xC9, 0xF0, 0xEB, 0xBD, 0x05, 0x26, 0x27, 0x1F, 0x41, 0x14, 0x63, 0x32, 0x00, 0x00, },
+            [7] = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }
+        };
+        public static byte[] Encrypt(byte[] input)
+        {
+            byte[] encrypted = input;
+            byte key = 0xF;
+            for (var i = 0; i < input.Length; i++)
+            {
+                encrypted[i] ^= key;
+                key += 0xF;
+            }
+
+            return encrypted;
+        }
+        public static byte[] Encrypt(string pass)
+        {
+            var input = StringTo16LongArray(pass);
+            return Encrypt(input);
+        }
+        
+        public static string Decrypt(byte[] input)
+        {
+            byte[] decrypted = input;
+            byte key = 0xF;
+            for(var i = 0; i < input.Length; i++)
+            {
+                decrypted[i] ^= key;
+                key += 0xF;
+            }
+            return Encoding.GetEncoding("sjis").GetString(decrypted) ;
+        }
+        public static string Decrypt(string str)
+        {
+            if (str == "")
+                return "";
+            var arr = str.Split('-');
+            var array = new byte[arr.Length];
+            for (int i = 0; i < arr.Length; i++)
+                array[i] = Convert.ToByte(arr[i], 16);
+
+            return Decrypt(array);
+        }
+        private static byte[] StringTo16LongArray(string input)
+        {
+            byte[] output = new byte[16];
+            var stringBytes = Encoding.GetEncoding("sjis").GetBytes(input);
+            Array.Copy(stringBytes, output, Math.Min(16, stringBytes.Length));
+            return output;
+        }
+
+    }
+}

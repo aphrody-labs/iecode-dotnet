@@ -1,0 +1,2 @@
+# Raw game files (encrypted cpk_list.cfg.bin from the game install): never commit.
+*.cfg.bin

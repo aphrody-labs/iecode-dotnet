@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="720"
+             d:DesignHeight="520"
+             x:Class="IECODE.Gui.Tools.ToolboxTextDecoderView">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="20" Spacing="16">
+            <StackPanel Spacing="4">
+                <TextBlock FontSize="22" FontWeight="SemiBold">Toolbox text decoder</TextBlock>
+                <TextBlock Opacity="0.72"
+                           TextWrapping="Wrap">
+                    Decode the Toolbox byte encoding or encode text for a game text block.
+                </TextBlock>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto"
+                  ColumnSpacing="12" RowSpacing="8">
+                <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold">Encoded bytes</TextBlock>
+                <Button Grid.Row="0" Grid.Column="1" Content="Decode"
+                        Click="OnDecodeClick"
+                        AutomationProperties.Name="Decode hexadecimal bytes" />
+                <TextBox x:Name="EncodedBytesTextBox"
+                         Grid.Row="1" Grid.ColumnSpan="2"
+                         AcceptsReturn="True"
+                         MinHeight="96"
+                         TextWrapping="Wrap"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         Watermark="7B 7C 0A 41 42 43" />
+                <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="SemiBold">Decoded text</TextBlock>
+                <TextBox x:Name="DecodedTextTextBox"
+                         Grid.Row="3" Grid.ColumnSpan="2"
+                         AcceptsReturn="True"
+                         IsReadOnly="True"
+                         MinHeight="96"
+                         TextWrapping="Wrap"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto"
+                  ColumnSpacing="12" RowSpacing="8">
+                <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold">Plain text</TextBlock>
+                <Button Grid.Row="0" Grid.Column="1" Content="Encode"
+                        Click="OnEncodeClick"
+                        AutomationProperties.Name="Encode text as hexadecimal bytes" />
+                <TextBox x:Name="PlainTextTextBox"
+                         Grid.Row="1" Grid.ColumnSpan="2"
+                         AcceptsReturn="True"
+                         MinHeight="96"
+                         TextWrapping="Wrap"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         Watermark="Text to encode" />
+                <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="SemiBold">Encoded output</TextBlock>
+                <TextBox x:Name="EncodedOutputTextBox"
+                         Grid.Row="3" Grid.ColumnSpan="2"
+                         IsReadOnly="True"
+                         MinHeight="72"
+                         TextWrapping="Wrap"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" />
+            </Grid>
+
+            <TextBlock x:Name="StatusTextBlock"
+                       Opacity="0.72"
+                       TextWrapping="Wrap"
+                       AutomationProperties.LiveSetting="Polite" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

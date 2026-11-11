@@ -1,0 +1,113 @@
+using System.ComponentModel;
+using System.Globalization;
+using Avalonia;
+using Avalonia.Data.Converters;
+using Avalonia.Markup.Xaml;
+
+namespace ndsSharp.Viewer.Shared.Extensions;
+
+public static class EnumExtensions
+{
+    public static string GetDescription(this Enum value)
+    {
+        return value.GetType().GetField(value.ToString())?.GetCustomAttributes(typeof(DescriptionAttribute), false).SingleOrDefault() is not DescriptionAttribute attribute ? value.ToString() : attribute.Description;
+    }
+
+    public static bool IsDisabled(this Enum value)
+    {
+        return value.GetType().GetField(value.ToString())?.GetCustomAttributes(typeof(DisabledAttribute), false).SingleOrDefault() is not null;
+    }
+}
+
+public class EnumToItemsSource(Type type) : MarkupExtension
+{
+    public override object ProvideValue(IServiceProvider serviceProvider)
+    {
+        var values = Enum.GetValues(type).Cast<Enum>();
+        return values.Select(value => new EnumRecord(type, value, value.GetDescription(), value.IsDisabled())).ToList();
+    }
+}
+
+public record EnumRecord(Type EnumType, Enum Value, string Description, bool IsDisabled = false)
+{
+    public override string ToString()
+    {
+        return Description;
+    }
+}
+
+public class EnumToStringConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        var enumValue = value as Enum;
+        return enumValue is null ? AvaloniaProperty.UnsetValue : enumValue.GetDescription();
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is not string text || !targetType.IsEnum)
+        {
+            return AvaloniaProperty.UnsetValue;
+        }
+
+        return Enum.TryParse(targetType, text, true, out var parsed)
+            ? parsed
+            : AvaloniaProperty.UnsetValue;
+    }
+}
+
+
+public class EnumToRecordConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        var enumValue = value as Enum;
+        return enumValue is null ? AvaloniaProperty.UnsetValue
+            : new EnumRecord(enumValue.GetType(), enumValue, enumValue.GetDescription(), enumValue.IsDisabled());
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        var enumValue = value as EnumRecord;
+        return enumValue is null ? AvaloniaProperty.UnsetValue : enumValue.Value;
+    }
+}
+
+public class EnumHasFlagConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        var enumValue = value as Enum;
+        var compareValue = parameter as Enum;
+
+        return enumValue is null || compareValue is null || enumValue.GetType() != compareValue.GetType()
+            ? AvaloniaProperty.UnsetValue : enumValue.HasFlag(compareValue);
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        return AvaloniaProperty.UnsetValue;
+    }
+}
+
+public class EnumEqualsConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        var enumValue = value as Enum;
+        var compareValue = parameter as Enum;
+
+        return enumValue is null ? AvaloniaProperty.UnsetValue : enumValue.Equals(compareValue);
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        return AvaloniaProperty.UnsetValue;
+    }
+}
+
+public class DisabledAttribute : Attribute
+{
+
+}

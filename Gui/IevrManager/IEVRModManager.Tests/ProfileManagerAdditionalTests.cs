@@ -201,8 +201,8 @@ namespace IEVRModManager.Tests
                 Name = "LinkedMods",
                 Mods = new List<ModData>
                 {
-                    new ModData { Name = "Mod1", Enabled = true, ModLink = "https://example.com/mod1" },
-                    new ModData { Name = "Mod2", Enabled = false, ModLink = "https://example.com/mod2" }
+                    new ModData { Name = "Mod1", Enabled = true, ModLink = "https://google.com/mod1" },
+                    new ModData { Name = "Mod2", Enabled = false, ModLink = "https://google.com/mod2" }
                 }
             };
 
@@ -213,8 +213,8 @@ namespace IEVRModManager.Tests
             // Assert
             Assert.NotNull(loaded);
             Assert.Equal(2, loaded.Mods.Count);
-            Assert.Equal("https://example.com/mod1", loaded.Mods[0].ModLink);
-            Assert.Equal("https://example.com/mod2", loaded.Mods[1].ModLink);
+            Assert.Equal("https://google.com/mod1", loaded.Mods[0].ModLink);
+            Assert.Equal("https://google.com/mod2", loaded.Mods[1].ModLink);
         }
 
         [Fact]

@@ -232,7 +232,7 @@ Create a `mod_data.json` file in your mod's root folder:
   "Author": "Your Name or Username",
   "ModVersion": "1.0",
   "GameVersion": "1.4.1",
-  "ModLink": "https://example.com/your-mod-page"
+  "ModLink": "https://google.com/your-mod-page"
 }
 ```
 

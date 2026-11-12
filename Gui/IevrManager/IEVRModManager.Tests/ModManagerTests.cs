@@ -113,7 +113,7 @@ namespace IEVRModManager.Tests
                 { "Author", "Test Author" },
                 { "ModVersion", "1.0.0" },
                 { "GameVersion", "1.5.1" },
-                { "ModLink", "https://example.com/mod" }
+                { "ModLink", "https://google.com/mod" }
             };
             File.WriteAllText(modDataPath, JsonSerializer.Serialize(modData));
 
@@ -126,7 +126,7 @@ namespace IEVRModManager.Tests
             Assert.Equal("Test Author", mod.Author);
             Assert.Equal("1.0.0", mod.ModVersion);
             Assert.Equal("1.5.1", mod.GameVersion);
-            Assert.Equal("https://example.com/mod", mod.ModLink);
+            Assert.Equal("https://google.com/mod", mod.ModLink);
         }
 
         [Fact]

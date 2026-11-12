@@ -36,7 +36,7 @@ namespace IEVRModManager.Tests
                 author: "Test Author",
                 modVersion: "1.0.0",
                 gameVersion: "1.5.1",
-                modLink: "https://example.com/mod"
+                modLink: "https://google.com/mod"
             );
 
             // Assert
@@ -47,7 +47,7 @@ namespace IEVRModManager.Tests
             Assert.Equal("Test Author", modEntry.Author);
             Assert.Equal("1.0.0", modEntry.ModVersion);
             Assert.Equal("1.5.1", modEntry.GameVersion);
-            Assert.Equal("https://example.com/mod", modEntry.ModLink);
+            Assert.Equal("https://google.com/mod", modEntry.ModLink);
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace IEVRModManager.Tests
                 name: "TestMod",
                 path: "C:\\Mods",
                 enabled: false,
-                modLink: "https://example.com/mod"
+                modLink: "https://google.com/mod"
             );
 
             // Act
@@ -108,7 +108,7 @@ namespace IEVRModManager.Tests
             // Assert
             Assert.Equal("TestMod", modData.Name);
             Assert.False(modData.Enabled);
-            Assert.Equal("https://example.com/mod", modData.ModLink);
+            Assert.Equal("https://google.com/mod", modData.ModLink);
         }
 
         [Fact]
@@ -135,7 +135,7 @@ namespace IEVRModManager.Tests
             {
                 Name = "TestMod",
                 Enabled = false,
-                ModLink = "https://example.com/mod"
+                ModLink = "https://google.com/mod"
             };
             var basePath = "C:\\Mods";
 
@@ -146,7 +146,7 @@ namespace IEVRModManager.Tests
             Assert.Equal("TestMod", modEntry.Name);
             Assert.Equal(basePath, modEntry.Path);
             Assert.False(modEntry.Enabled);
-            Assert.Equal("https://example.com/mod", modEntry.ModLink);
+            Assert.Equal("https://google.com/mod", modEntry.ModLink);
         }
 
         [Fact]

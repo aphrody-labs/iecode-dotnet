@@ -157,8 +157,8 @@ namespace IEVRModManager.Tests
             var manager = GetConfigManager();
             var modEntries = new List<ModEntry>
             {
-                new ModEntry("Mod1", "C:\\Mods", enabled: true, modLink: "https://example.com/mod1"),
-                new ModEntry("Mod2", "C:\\Mods", enabled: false, modLink: "https://example.com/mod2")
+                new ModEntry("Mod1", "C:\\Mods", enabled: true, modLink: "https://google.com/mod1"),
+                new ModEntry("Mod2", "C:\\Mods", enabled: false, modLink: "https://google.com/mod2")
             };
 
             // Act
@@ -179,8 +179,8 @@ namespace IEVRModManager.Tests
             // Assert
             var loaded = manager.Load();
             Assert.Equal(2, loaded.Mods.Count);
-            Assert.Equal("https://example.com/mod1", loaded.Mods[0].ModLink);
-            Assert.Equal("https://example.com/mod2", loaded.Mods[1].ModLink);
+            Assert.Equal("https://google.com/mod1", loaded.Mods[0].ModLink);
+            Assert.Equal("https://google.com/mod2", loaded.Mods[1].ModLink);
         }
 
         [Fact]

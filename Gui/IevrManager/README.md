@@ -67,7 +67,7 @@ The app stores its data in `%AppData%\.ievrModManager\` (configuration, mods, te
 
 The main window shows all mods found in `%AppData%\.ievrModManager\Mods` (top = highest priority). Each mod shows:
 
-- Enabled status ( = enabled,  = disabled)
+- Enabled status ( = enabled, = disabled)
 - Display name
 - Version
 - Game version compatibility
@@ -328,9 +328,9 @@ dotnet run
 
 **Current Status:**
 
--  WPF does not work on Linux
--  Build scripts are prepared for when migration is complete
--  See `MIGRATION_TO_LINUX.md` for detailed migration guide
+- WPF does not work on Linux
+- Build scripts are prepared for when migration is complete
+- See `MIGRATION_TO_LINUX.md` for detailed migration guide
 
 **After Migration to Avalonia UI:**
 

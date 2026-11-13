@@ -7,7 +7,13 @@
 //   bun apps/iecode-dotnet/Gui/IevrManager/Themes/generate.ts [--check] [--bin <bunos-design>]
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { productSeed, rolesFor, rustThemeExport, type Mode, type ThemeInput } from "@aphrody/m3-os-themes";
+import {
+  productSeed,
+  rolesFor,
+  rustThemeExport,
+  type Mode,
+  type ThemeInput,
+} from "@aphrody/m3-os-themes";
 
 type Variant = NonNullable<ThemeInput["variant"]>;
 interface Palette {
@@ -22,7 +28,10 @@ const root = join(dir, "..", "..", "..", "..", "..");
 const args = process.argv.slice(2);
 const check = args.includes("--check");
 const binAt = args.indexOf("--bin");
-const bin = binAt >= 0 ? args[binAt + 1]! : (process.env["BUNOS_DESIGN"] ?? "bunos-design");
+const bin =
+  binAt >= 0
+    ? args[binAt + 1]!
+    : (process.env["BUNOS_DESIGN"] ?? "bunos-design");
 
 const product = productSeed(root);
 // Light and Dark follow the product seed; the named variants keep their historical hue as a seed, never a hand palette.
@@ -39,26 +48,44 @@ const PALETTES: Palette[] = [
 
 /** Extended success/warning roles from the generated Sheet::Tailwind until the ThemeExport carries them. */
 function extendedRoles(mode: Mode): Record<string, string> {
-  const css = readFileSync(join(root, "packages/m3-theme/tailwind.css"), "utf8");
+  const css = readFileSync(
+    join(root, "packages/m3-theme/tailwind.css"),
+    "utf8",
+  );
   const block =
     mode === "light"
       ? /\n:where\(:root\) \{([^}]*)\}/.exec(css)
       : /\n:where\(:root\.dark, \.dark\) \{([^}]*)\}/.exec(css);
-  if (!block) throw new Error(`packages/m3-theme/tailwind.css: no ${mode} extended roles block`);
+  if (!block)
+    throw new Error(
+      `packages/m3-theme/tailwind.css: no ${mode} extended roles block`,
+    );
   const out: Record<string, string> = {};
-  for (const m of block[1]!.matchAll(/--md-ext-color-([a-z-]+): (#[\da-f]{6});/gi))
-    out[m[1]!.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase())] = m[2]!.toLowerCase();
+  for (const m of block[1]!.matchAll(
+    /--md-ext-color-([a-z-]+): (#[\da-f]{6});/gi,
+  ))
+    out[m[1]!.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase())] =
+      m[2]!.toLowerCase();
   return out;
 }
 
-const STATE = { hover: 0.08, focus: 0.1, pressed: 0.1, disabledContainer: 0.12, disabledContent: 0.38 } as const;
+const STATE = {
+  hover: 0.08,
+  focus: 0.1,
+  pressed: 0.1,
+  disabledContainer: 0.12,
+  disabledContent: 0.38,
+} as const;
 
 /** An M3 state layer: `layer` at `opacity` composited over `base` (CSS color-mix in srgb). */
 function over(layer: string, opacity: number, base: string): string {
-  const ch = (hex: string, i: number) => Number.parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);
+  const ch = (hex: string, i: number) =>
+    Number.parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);
   return `#${[0, 1, 2]
-    .map(i => Math.round(ch(layer, i) * opacity + ch(base, i) * (1 - opacity)))
-    .map(v => v.toString(16).padStart(2, "0"))
+    .map((i) =>
+      Math.round(ch(layer, i) * opacity + ch(base, i) * (1 - opacity)),
+    )
+    .map((v) => v.toString(16).padStart(2, "0"))
     .join("")}`;
 }
 
@@ -81,7 +108,11 @@ function palette(p: Palette): string {
   const colors: [string, string, string][] = [
     ["BgColor", role("surface"), "surface"],
     ["CardBg", role("surfaceContainer"), "surface-container"],
-    ["HoverBg", over(role("onSurface"), STATE.hover, role("surfaceContainer")), "on-surface 8% over surface-container"],
+    [
+      "HoverBg",
+      over(role("onSurface"), STATE.hover, role("surfaceContainer")),
+      "on-surface 8% over surface-container",
+    ],
     [
       "FocusBg",
       over(role("onSurface"), STATE.focus, role("surfaceContainer")),
@@ -93,7 +124,11 @@ function palette(p: Palette): string {
       "on-surface 10% over surface-container",
     ],
     ["SelectedBg", role("secondaryContainer"), "secondary-container"],
-    ["TrackColor", role("surfaceContainerHighest"), "surface-container-highest"],
+    [
+      "TrackColor",
+      role("surfaceContainerHighest"),
+      "surface-container-highest",
+    ],
     [
       "TrackHover",
       over(role("onSurface"), STATE.hover, role("surfaceContainerHighest")),
@@ -106,23 +141,56 @@ function palette(p: Palette): string {
     ["TextBrightColor", role("onSurface"), "on-surface"],
     ["TimestampColor", role("onSurfaceVariant"), "on-surface-variant"],
     ["AccentColor", role("primary"), "primary"],
-    ["AccentHover", over(role("onPrimary"), STATE.hover, role("primary")), "on-primary 8% over primary"],
-    ["AccentActive", over(role("onPrimary"), STATE.pressed, role("primary")), "on-primary 10% over primary"],
+    [
+      "AccentHover",
+      over(role("onPrimary"), STATE.hover, role("primary")),
+      "on-primary 8% over primary",
+    ],
+    [
+      "AccentActive",
+      over(role("onPrimary"), STATE.pressed, role("primary")),
+      "on-primary 10% over primary",
+    ],
     ["OnAccentColor", role("onPrimary"), "on-primary"],
     ["SuccessColor", role("success"), "ext success"],
-    ["SuccessHover", over(role("onSuccess"), STATE.hover, role("success")), "on-success 8% over success"],
-    ["SuccessActive", over(role("onSuccess"), STATE.pressed, role("success")), "on-success 10% over success"],
+    [
+      "SuccessHover",
+      over(role("onSuccess"), STATE.hover, role("success")),
+      "on-success 8% over success",
+    ],
+    [
+      "SuccessActive",
+      over(role("onSuccess"), STATE.pressed, role("success")),
+      "on-success 10% over success",
+    ],
     ["OnSuccessColor", role("onSuccess"), "ext on-success"],
     ["ErrorColor", role("error"), "error"],
-    ["ErrorHover", over(role("onError"), STATE.hover, role("error")), "on-error 8% over error"],
-    ["ErrorActive", over(role("onError"), STATE.pressed, role("error")), "on-error 10% over error"],
+    [
+      "ErrorHover",
+      over(role("onError"), STATE.hover, role("error")),
+      "on-error 8% over error",
+    ],
+    [
+      "ErrorActive",
+      over(role("onError"), STATE.pressed, role("error")),
+      "on-error 10% over error",
+    ],
     ["OnErrorColor", role("onError"), "on-error"],
     ["InfoColor", role("tertiary"), "tertiary"],
     ["WarningColor", role("warning"), "ext warning"],
-    ["DisabledBg", over(role("onSurface"), STATE.disabledContainer, role("surface")), "on-surface 12% over surface"],
-    ["DisabledText", over(role("onSurface"), STATE.disabledContent, role("surface")), "on-surface 38% over surface"],
+    [
+      "DisabledBg",
+      over(role("onSurface"), STATE.disabledContainer, role("surface")),
+      "on-surface 12% over surface",
+    ],
+    [
+      "DisabledText",
+      over(role("onSurface"), STATE.disabledContent, role("surface")),
+      "on-surface 38% over surface",
+    ],
   ];
-  const brush = (key: string) => (key.endsWith("Color") ? key.slice(0, -"Color".length) : key) + "Brush";
+  const brush = (key: string) =>
+    (key.endsWith("Color") ? key.slice(0, -"Color".length) : key) + "Brush";
   const width = Math.max(...colors.map(([k]) => k.length));
   return `<!-- GENERATED - do not hand-edit. Generated by apps/iecode-dotnet/Gui/IevrManager/Themes/generate.ts.
      Rust ThemeExport (bunos-design theme): seed ${p.seed}, variant ${p.variant}, contrast 0, ${p.mode}. -->

@@ -51,7 +51,7 @@ public sealed record NieMemoryStructure(
 
 /// <summary>
 /// Authoritative, factual reverse-engineering specification for nie.exe (Inazuma Eleven: Victory Road).
-/// Cross-language contract matching Rust aphrody-nie-re, TypeScript @rosegriffon/inagle, and Python niepy.
+/// Cross-language contract matching Rust rg-re, TypeScript @rosegriffon/inagle, and Python niepy.
 /// </summary>
 public sealed class NieReMap
 {

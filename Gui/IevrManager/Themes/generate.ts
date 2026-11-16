@@ -1,21 +1,26 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
-// Emits the IEVR Mod Manager WPF palettes (Light, Dark and the seeded variants) from the Rust ThemeExport
-// (aphrody_m3_tokens::theme via `bunos-design theme`, read through @aphrody/m3-os-themes). Styles.xaml holds the control
-// styles and reads every colour through DynamicResource, so a palette dictionary only carries roles.
+// Emits the IEVR Mod Manager WPF palettes (Light, Dark and the seeded variants) with
+// @material/material-color-utilities. Styles.xaml holds the control styles and reads every colour through
+// DynamicResource, so a palette dictionary only carries roles.
 //
-//   bun apps/iecode-dotnet/Gui/IevrManager/Themes/generate.ts [--check] [--bin <bunos-design>]
+//   bun apps/iecode-dotnet/Gui/IevrManager/Themes/generate.ts [--check]
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  productSeed,
-  rolesFor,
-  rustThemeExport,
-  type Mode,
-  type ThemeInput,
-} from "@aphrody/m3-os-themes";
+  DynamicScheme,
+  Hct,
+  hexFromArgb,
+  MaterialDynamicColors,
+  SchemeFidelity,
+  SchemeFruitSalad,
+  SchemeTonalSpot,
+  SchemeVibrant,
+  argbFromHex,
+} from "@material/material-color-utilities";
 
-type Variant = NonNullable<ThemeInput["variant"]>;
+type Mode = "light" | "dark";
+type Variant = "tonalSpot" | "fidelity" | "vibrant" | "fruitSalad";
 interface Palette {
   name: string;
   seed: string;
@@ -23,18 +28,22 @@ interface Palette {
   mode: Mode;
 }
 
+const SCHEMES: Record<
+  Variant,
+  new (hct: Hct, dark: boolean, contrast: number) => DynamicScheme
+> = {
+  tonalSpot: SchemeTonalSpot,
+  fidelity: SchemeFidelity,
+  vibrant: SchemeVibrant,
+  fruitSalad: SchemeFruitSalad,
+};
+
 const dir = import.meta.dir;
-const root = join(dir, "..", "..", "..", "..", "..");
 const args = process.argv.slice(2);
 const check = args.includes("--check");
-const binAt = args.indexOf("--bin");
-const bin =
-  binAt >= 0
-    ? args[binAt + 1]!
-    : (process.env["BUNOS_DESIGN"] ?? "bunos-design");
 
-const product = productSeed(root);
 // Light and Dark follow the product seed; the named variants keep their historical hue as a seed, never a hand palette.
+const product = "#8c6c88";
 const PALETTES: Palette[] = [
   { name: "Light", seed: product, variant: "tonalSpot", mode: "light" },
   { name: "Dark", seed: product, variant: "tonalSpot", mode: "dark" },
@@ -46,27 +55,21 @@ const PALETTES: Palette[] = [
   { name: "Christmas", seed: "#e23b3b", variant: "fruitSalad", mode: "dark" },
 ];
 
-/** Extended success/warning roles from the generated Sheet::Tailwind until the ThemeExport carries them. */
-function extendedRoles(mode: Mode): Record<string, string> {
-  const css = readFileSync(
-    join(root, "packages/m3-theme/tailwind.css"),
-    "utf8",
-  );
-  const block =
-    mode === "light"
-      ? /\n:where\(:root\) \{([^}]*)\}/.exec(css)
-      : /\n:where\(:root\.dark, \.dark\) \{([^}]*)\}/.exec(css);
-  if (!block)
-    throw new Error(
-      `packages/m3-theme/tailwind.css: no ${mode} extended roles block`,
-    );
-  const out: Record<string, string> = {};
-  for (const m of block[1]!.matchAll(
-    /--md-ext-color-([a-z-]+): (#[\da-f]{6});/gi,
-  ))
-    out[m[1]!.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase())] =
-      m[2]!.toLowerCase();
-  return out;
+/** Extended success/warning roles (not part of Material Color Utilities), fixed per mode. */
+const EXTENDED: Record<Mode, Record<string, string>> = {
+  light: { success: "#006c4b", onSuccess: "#ffffff", warning: "#934b00" },
+  dark: { success: "#5fdda8", onSuccess: "#003825", warning: "#ffb782" },
+};
+
+const MDC = new MaterialDynamicColors();
+
+/** Material role name (camelCase, as listed below) of a palette, `#rrggbb`. */
+function rolesOf(p: Palette): (key: string) => string | undefined {
+  const scheme = new SCHEMES[p.variant](Hct.fromInt(argbFromHex(p.seed)), p.mode === "dark", 0);
+  return (key) => {
+    const fn = (MDC as unknown as Record<string, (() => { getArgb(s: DynamicScheme): number }) | undefined>)[key];
+    return typeof fn === "function" ? hexFromArgb(fn.call(MDC).getArgb(scheme)).toLowerCase() : undefined;
+  };
 }
 
 const STATE = {
@@ -90,18 +93,10 @@ function over(layer: string, opacity: number, base: string): string {
 }
 
 function palette(p: Palette): string {
-  const input: ThemeInput = {
-    name: p.name,
-    seed: p.seed,
-    variant: p.variant,
-    contrastLevel: 0,
-    mode: p.mode,
-    nativeTheme: rustThemeExport(p.seed, p.variant, 0, bin),
-  };
-  const r = rolesFor(input, p.mode).roles;
-  const x = extendedRoles(p.mode);
+  const r = rolesOf(p);
+  const x = EXTENDED[p.mode];
   const role = (k: string): string => {
-    const v = r[k] ?? x[k];
+    const v = r(k) ?? x[k];
     if (!v) throw new Error(`role ${k} missing for ${p.name}`);
     return v;
   };
@@ -193,7 +188,7 @@ function palette(p: Palette): string {
     (key.endsWith("Color") ? key.slice(0, -"Color".length) : key) + "Brush";
   const width = Math.max(...colors.map(([k]) => k.length));
   return `<!-- GENERATED - do not hand-edit. Generated by apps/iecode-dotnet/Gui/IevrManager/Themes/generate.ts.
-     Rust ThemeExport (bunos-design theme): seed ${p.seed}, variant ${p.variant}, contrast 0, ${p.mode}. -->
+     Material Color Utilities: seed ${p.seed}, variant ${p.variant}, contrast 0, ${p.mode}. -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ResourceDictionary.MergedDictionaries>

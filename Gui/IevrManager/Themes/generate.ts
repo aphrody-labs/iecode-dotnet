@@ -65,10 +65,21 @@ const MDC = new MaterialDynamicColors();
 
 /** Material role name (camelCase, as listed below) of a palette, `#rrggbb`. */
 function rolesOf(p: Palette): (key: string) => string | undefined {
-  const scheme = new SCHEMES[p.variant](Hct.fromInt(argbFromHex(p.seed)), p.mode === "dark", 0);
+  const scheme = new SCHEMES[p.variant](
+    Hct.fromInt(argbFromHex(p.seed)),
+    p.mode === "dark",
+    0,
+  );
   return (key) => {
-    const fn = (MDC as unknown as Record<string, (() => { getArgb(s: DynamicScheme): number }) | undefined>)[key];
-    return typeof fn === "function" ? hexFromArgb(fn.call(MDC).getArgb(scheme)).toLowerCase() : undefined;
+    const fn = (
+      MDC as unknown as Record<
+        string,
+        (() => { getArgb(s: DynamicScheme): number }) | undefined
+      >
+    )[key];
+    return typeof fn === "function"
+      ? hexFromArgb(fn.call(MDC).getArgb(scheme)).toLowerCase()
+      : undefined;
   };
 }
 

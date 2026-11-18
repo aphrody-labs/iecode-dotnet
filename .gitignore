@@ -3,3 +3,13 @@ obj/
 *.user
 .vs/
 TestResults/
+
+# Local state and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.claude/settings.local.json
+publish/
+artifacts/

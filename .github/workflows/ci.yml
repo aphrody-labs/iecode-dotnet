@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json
+      - name: Restore (locked)
+        run: dotnet restore Core.Tests/IECODE.Core.Tests.csproj --locked-mode && dotnet restore Cli/IECODE.Cli.csproj --locked-mode
+      - name: Build
+        run: dotnet build Core.Tests/IECODE.Core.Tests.csproj -c Release --no-restore && dotnet build Cli/IECODE.Cli.csproj -c Release --no-restore
+      - name: Test
+        run: dotnet test Core.Tests/IECODE.Core.Tests.csproj -c Release --no-build --logger "trx;LogFileName=results.trx"
+      - name: CLI smoke
+        run: dotnet run --project Cli/IECODE.Cli.csproj -c Release --no-build -- cdn --help
+
+  gui:
+    name: build GUI (windows-latest)
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json
+      - run: dotnet restore Gui/IECODE.Gui.csproj --locked-mode
+      - run: dotnet build Gui/IECODE.Gui.csproj -c Release --no-restore

@@ -1,0 +1,14 @@
+# Naming declaration of this repository (scheme: aphrody-labs/.github naming/NAMING.md). Names come from here, never from another repository.
+id = "iecode-dotnet"
+kind = "app"
+org = "aphrody-labs"
+
+[names]
+# The IECODE_* variables predate the scheme and are read by the code as is.
+env_prefix = "IECODE_"
+
+[legacy]
+# Read only as aliases; new code adds none.
+env = ["NIE_GAME_DIR", "NIE_FFI_PATH"]
+assembly = ["IECODE.Core", "IECODE.Cli", "IECODE.Ffi", "IECODE.Gui"]
+nuget = ["iecode-ffi-dotnet"]

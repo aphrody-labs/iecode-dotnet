@@ -21,3 +21,7 @@ history from `apps/iecode-dotnet` of the Rose Griffon monorepo (last tree there:
 - English, no emoji, in code, docs and commits. Original comments in French stay until the file is
   touched for another reason.
 - Third-party notices stay with their code (`LICENSE.upstream`, `Gui/*/LICENSE*`). Do not delete them.
+- `SixLabors.ImageSharp` is pinned to 3.1.12 on purpose: 3.2.0 fails every Release build without a
+  Six Labors license key, and 3.1.12 is the last release without that gate. The advisories open
+  against 3.1.12 (GHSA-jjfr-hcj7-qf5w, GHSA-v76p-62qx-wwq2, GHSA-wmxv-xphr-5c9g) concern TIFF
+  codecs, which IECODE never calls. Move to a licensed 3.2.x or 4.x when a key exists.
